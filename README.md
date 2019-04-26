@@ -2,6 +2,15 @@
 
 This is a modified simulated temperature sensor to test the ability to deploy a module to an IoTEdge Windows OS with the module compiled using the dotnet framework instead of dotnet core.
 
+- Console Application:  SimulatedTemperatureSensor
+    - Target Framework: .NET Framework 4.7.2
+
+- Class Library: Microsoft.Azure.Devices.Edge.ModuleUtil
+    - Target Framework: .NET Standard 2.0
+
+- Class Library: Microsoft.Azure.Devices.Edge.Util
+    - Target Framework: .NET Standard 2.0
+
 ## Build and Deploy the Module to a Registry
 
 The module needs to be built on Windows System running Windows Containers.
@@ -33,6 +42,18 @@ The installation script automatically installs the Moby engine on your device be
 ```powershell
 Install-WindowsFeature -Name Containers -IncludeAllSubFeature
 Restart-Computer
+```
+
+### Download and install the IoT Edge Service
+
+Use PowerShell to download and install the IoT Edge runtime. When prompted for a DeviceConnectionString, provide the connection string of the Edge Device configured in the IoT Hub.
+
+```powershell
+. {Invoke-WebRequest -useb aka.ms/iotedge-win} | Invoke-Expression; `
+Install-SecurityDaemon -Manual -ContainerOs Windows
+
+Get-Service iotedge
+iotedge list
 ```
 
 ### Disable process identification
