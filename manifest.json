@@ -5,7 +5,7 @@
                 "modules": {
                     "SimulatedTemperatureSensor": {
                         "settings": {
-                            "image": "danielscholl/tempsensor:windows",
+                            "image": "danielscholl/simulated-win-sensor:1.0",
                             "createOptions": ""
                         },
                         "type": "docker",
@@ -18,7 +18,12 @@
                     "settings": {
                         "minDockerVersion": "v1.25"
                     },
-                    "type": "docker"
+                    "type": "docker",
+                    "env": {
+                        "MessageCount": {
+                            "value": "-1"
+                        }
+                    }
                 },
                 "schemaVersion": "1.0",
                 "systemModules": {
@@ -44,8 +49,7 @@
         "$edgeHub": {
             "properties.desired": {
                 "routes": {
-                    "route": "FROM /messages/* INTO $upstream",
-                    "upstream": "FROM /messages/* INTO $upstream"
+                    "tempsensor": "FROM /messages/modules/SimulatedTemperatureSensor/outputs/* INTO $upstream"
                 },
                 "schemaVersion": "1.0",
                 "storeAndForwardConfiguration": {

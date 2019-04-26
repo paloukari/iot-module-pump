@@ -15,4 +15,4 @@ RUN MSBuild.exe SimulatedTemperatureSensor.sln /t:build /p:Configuration=Release
 FROM mcr.microsoft.com/dotnet/framework/runtime:4.7.2
 WORKDIR C:\edge-module  
 COPY --from=builder C:\out .  
-# ENTRYPOINT ["SimulatedTemperatureSensor.exe"] 
+ENTRYPOINT ["SimulatedTemperatureSensor.exe"] 
