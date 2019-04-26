@@ -2,23 +2,23 @@
 
 This is a modified simulated temperature sensor to test the ability to deploy a module to an IoTEdge Windows OS with the module compiled using the dotnet framework instead of dotnet core.
 
-- Console Application:  SimulatedTemperatureSensor
-    - Target Framework: .NET Framework 4.7.2
+- Console Application:  __SimulatedTemperatureSensor__
+    - Target Framework: _.NET Framework 4.7.2_
 
-- Class Library: Microsoft.Azure.Devices.Edge.ModuleUtil
-    - Target Framework: .NET Standard 2.0
+- Class Library: __Microsoft.Azure.Devices.Edge.ModuleUtil__
+    - Target Framework: _.NET Standard 2.0_
 
-- Class Library: Microsoft.Azure.Devices.Edge.Util
-    - Target Framework: .NET Standard 2.0
+- Class Library: __Microsoft.Azure.Devices.Edge.Util__
+    - Target Framework: _.NET Standard 2.0_
 
-## Build and Deploy the Module to a Registry
+## Build and Push the Module to a Registry
 
 The module needs to be built on Windows System running Windows Containers.
 
 ```powershell
 # Setup the Environment Variables
 #----------------------------------
-$Env:Registry = "danielscholl"
+$Env:Registry = "<your_registry>"
 $Env:Version = "1.0"
 
 # Build and Push the Module Image
@@ -58,7 +58,7 @@ iotedge list
 
 ### Disable process identification
 
-> Microsoft.Azure.Devices.Client currently does not support the process identification security feature when compiled against dotnet framework. This however is not a good practice for use in production.  
+> Microsoft.Azure.Devices.Client currently does not support the process identification security feature when compiled against dotnet framework. Be aware this is not a good practice for a production system.  
 
 To disable process identification on your IoT Edge device, you'll need to provide the IP address and port for workload_uri and management_uri in the connect section of the IoT Edge daemon configuration.
 
@@ -90,13 +90,26 @@ iotedge list
 
 ## Deploy the Module to the Edge Device
 
-Modify the module image in the manifest file as necessary based on the module image name used.
+> Modify the module image name in the manifest file as necessary based on the __registry__ used.
+
+```json
+"SimulatedTemperatureSensor": {
+    "settings": {
+        "image": "<your_registry>/simulated-win-sensor:1.0",
+        "createOptions": ""
+    },
+    "type": "docker",
+    "status": "running",
+    "restartPolicy": "always",
+    "version": "1.0"
+}
+```
 
 ```powershell
 # Setup the Environment Variables
 #----------------------------------
 $Env:Device = "edge-windows"
-$Env:Hub = "danielscholl"
+$Env:Hub = "<your_registry>"
 
 # Deploy the Module
 #----------------------------------
