@@ -184,6 +184,7 @@ namespace SimulatedTemperatureSensor
                     var eventMessage = new Message(Encoding.UTF8.GetBytes(dataBuffer));
                     eventMessage.Properties.Add("sequenceNumber", count.ToString());
                     eventMessage.Properties.Add("batchId", BatchId.ToString());
+                    eventMessage.Properties.Add("asset", "PoC");
                     Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Body: [{dataBuffer}]");
 
                     await moduleClient.SendEventAsync("temperatureOutput", eventMessage);

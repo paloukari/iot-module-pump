@@ -5,7 +5,7 @@
                 "modules": {
                     "SimulatedTemperatureSensor": {
                         "settings": {
-                            "image": "<your_registry>/simulated-win-sensor:1.0",
+                            "image": "<your_registry>/simulated-win-sensor:2.1",
                             "createOptions": ""
                         },
                         "type": "docker",

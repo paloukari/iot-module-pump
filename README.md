@@ -19,7 +19,7 @@ The module needs to be built on Windows System running Windows Containers.
 # Setup the Environment Variables
 #----------------------------------
 $Env:Registry = "<your_registry>"
-$Env:Version = "1.0"
+$Env:Version = "2.1"
 
 # Build and Push the Module Image
 #----------------------------------
@@ -95,7 +95,7 @@ iotedge list
 ```json
 "SimulatedTemperatureSensor": {
     "settings": {
-        "image": "<your_registry>/simulated-win-sensor:1.0",
+        "image": "<your_registry>/simulated-win-sensor:2.1",
         "createOptions": ""
     },
     "type": "docker",
