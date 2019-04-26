@@ -118,3 +118,40 @@ az iot edge set-modules `
     --hub-name $Env:Hub `
     --content manifest.json
 ```
+
+## Example Message Format
+
+```json
+[
+    {
+        "asset": "PoC",
+        "source": "Simulator",
+        "events": [
+            {
+                "deviceId": "86EB0F6A7C60",
+                "timeStamp": "2019-04-26T14:36:12.0218344Z",
+                "machineTemperature": {
+                    "value": 22.971214394420951,
+                    "units": "degC",
+                    "status": 200
+                },
+                "machinePressure": {
+                    "value": 1.2245687284783362,
+                    "units": "psig",
+                    "status": 200
+                },
+                "ambientTemperature": {
+                    "value": 21.248441741218997,
+                    "units": "degC",
+                    "status": 200
+                },
+                "ambientHumdity": {
+                    "value": 26.0,
+                    "units": "perc",
+                    "status": 200
+                }
+            }
+        ]
+    }
+]
+```

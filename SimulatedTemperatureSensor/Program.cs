@@ -5,6 +5,7 @@ using Microsoft.Azure.Devices.Edge.Util.Concurrency;
 using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
 using System.Threading;
@@ -126,19 +127,57 @@ namespace SimulatedTemperatureSensor
 
                 if (sendData)
                 {
+                    //var tempData = new MessageBody
+                    //{
+                    //    Machine = new Machine
+                    //    {
+                    //        Temperature = currentTemp,
+                    //        Pressure = sim.MachinePressureMin + ((currentTemp - sim.MachineTempMin) * normal),
+                    //    },
+                    //    Ambient = new Ambient
+                    //    {
+                    //        Temperature = sim.AmbientTemp + Rnd.NextDouble() - 0.5,
+                    //        Humidity = Rnd.Next(24, 27)
+                    //    },
+                    //    TimeCreated = DateTime.UtcNow
+                    //};
+
+                    var events = new List<MessageEvent>();
+                    events.Add(new MessageEvent
+                    {
+                        DeviceId = Environment.MachineName,
+                        TimeStamp = DateTime.UtcNow,
+                        MachineTemperature = new SensorReading
+                        {
+                            Value = currentTemp,
+                            Units = "degC",
+                            Status = 200
+                        },
+                        MachinePressure = new SensorReading
+                        {
+                            Value = sim.MachinePressureMin + ((currentTemp - sim.MachineTempMin) * normal),
+                            Units = "psig",
+                            Status = 200
+                        },
+                        AmbientTemperature = new SensorReading
+                        {
+                            Value = sim.AmbientTemp + Rnd.NextDouble() - 0.5,
+                            Units = "degC",
+                            Status = 200
+                        },
+                        AmbientHumdity = new SensorReading
+                        {
+                            Value = Rnd.Next(24, 27),
+                            Units = "perc",
+                            Status = 200
+                        }
+                    });
+
                     var tempData = new MessageBody
                     {
-                        Machine = new Machine
-                        {
-                            Temperature = currentTemp,
-                            Pressure = sim.MachinePressureMin + ((currentTemp - sim.MachineTempMin) * normal),
-                        },
-                        Ambient = new Ambient
-                        {
-                            Temperature = sim.AmbientTemp + Rnd.NextDouble() - 0.5,
-                            Humidity = Rnd.Next(24, 27)
-                        },
-                        TimeCreated = DateTime.UtcNow
+                        Asset = "PoC",
+                        Source = "Simulator",
+                        Events = events
                     };
 
                     string dataBuffer = JsonConvert.SerializeObject(tempData);
