@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Devices.Client;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Edge.ModuleUtil;
 using Microsoft.Azure.Devices.Edge.Util;
 using Microsoft.Azure.Devices.Edge.Util.Concurrency;
@@ -26,6 +27,9 @@ namespace SimulatedTemperatureSensor
 
         static TimeSpan messageDelay;
 
+        static TelemetryClient telemetryClient;
+        static bool insights = false;
+
         public static int Main() => MainAsync().Result;
 
         static async Task<int> MainAsync()
@@ -33,21 +37,37 @@ namespace SimulatedTemperatureSensor
             Console.WriteLine("SimulatedTemperatureSensor Main() started.");
             var appSettings = ConfigurationManager.AppSettings;
 
+            // Setup App Insights
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY")))
+            {
+                Console.WriteLine("Application Insights Enabled.");
+                insights = true;
+                telemetryClient = new TelemetryClient();
+                telemetryClient.Context.Device.Id = Environment.MachineName;
+                telemetryClient.TrackEvent("SimulatedTemperatureSensor started");
+                telemetryClient.GetMetric("SimulatorCount").TrackValue(1);  
+            }
+
+
             if (!TimeSpan.TryParse(appSettings["MessageDelay"], out messageDelay))
             {
                 messageDelay = TimeSpan.FromSeconds(5);
             }
 
             int messageCount;
-            if (!int.TryParse(appSettings[MessageCountConfigKey], out messageCount))
+
+            if(!int.TryParse(Environment.GetEnvironmentVariable(MessageCountConfigKey), out messageCount))
             {
-                messageCount = 500;
+                if (!int.TryParse(appSettings[MessageCountConfigKey], out messageCount))
+                {
+                    messageCount = 500;
+                }
             }
 
             var simulatorParameters = SimulatorParameters.Create();
 
             Console.WriteLine(
-                $"Initializing simulated temperature sensor to send {(SendUnlimitedMessages(messageCount) ? "unlimited" : messageCount.ToString())} "
+                $"Initializing simulated sensor to send {(SendUnlimitedMessages(messageCount) ? "unlimited" : messageCount.ToString())} "
                 + $"messages, at an interval of {messageDelay.TotalSeconds} seconds.\n"
                 + $"To change this, set the environment variable {MessageCountConfigKey} to the number of messages that should be sent (set it to -1 to send unlimited messages).");
 
@@ -92,10 +112,12 @@ namespace SimulatedTemperatureSensor
         /// Module behavior:
         ///        Sends data periodically (with default frequency of 5 seconds).
         ///        Data trend:
-        ///         - Machine Temperature regularly rises from 21C to 100C in regularly with jitter
-        ///         - Machine Pressure correlates with Temperature 1 to 10psi
+        ///         - Temperature regularly rises from 21C to 100C in regularly with jitter
+        ///         - Pressure correlates with Temperature 1 to 10psi
+        ///         - Suction Pressure stable around 5psi
+        ///         - Discharge Pressure stable around 5psi
         ///         - Ambient temperature stable around 21C
-        ///         - Humidity is stable with tiny jitter around 25%
+        ///         - Flow is stable with tiny jitter around 25%
         ///                Method for resetting the data stream
         /// </summary>
         static async Task SendEvents(
@@ -105,18 +127,18 @@ namespace SimulatedTemperatureSensor
             CancellationTokenSource cts)
         {
             int count = 1;
-            double currentTemp = sim.MachineTempMin;
-            double normal = (sim.MachinePressureMax - sim.MachinePressureMin) / (sim.MachineTempMax - sim.MachineTempMin);
+            double currentTemp = sim.TempMin;
+            double normal = (sim.PressureMax - sim.PressureMin) / (sim.TempMax - sim.TempMin);
 
             while (!cts.Token.IsCancellationRequested && (SendUnlimitedMessages(messageCount) || messageCount >= count))
             {
                 if (Reset)
                 {
-                    currentTemp = sim.MachineTempMin;
+                    currentTemp = sim.TempMin;
                     Reset.Set(false);
                 }
 
-                if (currentTemp > sim.MachineTempMax)
+                if (currentTemp > sim.TempMax)
                 {
                     currentTemp += Rnd.NextDouble() - 0.5; // add value between [-0.5..0.5]
                 }
@@ -127,47 +149,38 @@ namespace SimulatedTemperatureSensor
 
                 if (sendData)
                 {
-                    //var tempData = new MessageBody
-                    //{
-                    //    Machine = new Machine
-                    //    {
-                    //        Temperature = currentTemp,
-                    //        Pressure = sim.MachinePressureMin + ((currentTemp - sim.MachineTempMin) * normal),
-                    //    },
-                    //    Ambient = new Ambient
-                    //    {
-                    //        Temperature = sim.AmbientTemp + Rnd.NextDouble() - 0.5,
-                    //        Humidity = Rnd.Next(24, 27)
-                    //    },
-                    //    TimeCreated = DateTime.UtcNow
-                    //};
-
                     var events = new List<MessageEvent>();
                     events.Add(new MessageEvent
                     {
-                        DeviceId = Environment.MachineName,
+                        DeviceId = Environment.GetEnvironmentVariable("DEVICE") ?? Environment.MachineName,
                         TimeStamp = DateTime.UtcNow,
-                        MachineTemperature = new SensorReading
+                        Temperature = new SensorReading
                         {
                             Value = currentTemp,
                             Units = "degC",
                             Status = 200
                         },
-                        MachinePressure = new SensorReading
+                        Pressure = new SensorReading
                         {
-                            Value = sim.MachinePressureMin + ((currentTemp - sim.MachineTempMin) * normal),
+                            Value = sim.PressureMin + ((currentTemp - sim.TempMin) * normal),
                             Units = "psig",
                             Status = 200
                         },
-                        AmbientTemperature = new SensorReading
+                        SuctionPressure = new SensorReading
                         {
-                            Value = sim.AmbientTemp + Rnd.NextDouble() - 0.5,
-                            Units = "degC",
+                            Value = sim.PressureMin + 4 + ((currentTemp - sim.TempMin) * normal),
+                            Units = "psig",
                             Status = 200
                         },
-                        AmbientHumdity = new SensorReading
+                        DischargePressure = new SensorReading
                         {
-                            Value = Rnd.Next(24, 27),
+                            Value = sim.PressureMin + 1 + ((currentTemp - sim.TempMin) * normal),
+                            Units = "psig",
+                            Status = 200
+                        },
+                        Flow = new SensorReading
+                        {
+                            Value = Rnd.Next(78, 82),
                             Units = "perc",
                             Status = 200
                         }
@@ -175,7 +188,7 @@ namespace SimulatedTemperatureSensor
 
                     var tempData = new MessageBody
                     {
-                        Asset = "PoC",
+                        Asset = Environment.GetEnvironmentVariable("ASSET") ?? "PoC",
                         Source = "Simulator",
                         Events = events
                     };
@@ -184,10 +197,11 @@ namespace SimulatedTemperatureSensor
                     var eventMessage = new Message(Encoding.UTF8.GetBytes(dataBuffer));
                     eventMessage.Properties.Add("sequenceNumber", count.ToString());
                     eventMessage.Properties.Add("batchId", BatchId.ToString());
-                    eventMessage.Properties.Add("asset", "PoC");
+                    eventMessage.Properties.Add("asset", tempData.Asset);
                     Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Body: [{dataBuffer}]");
 
                     await moduleClient.SendEventAsync("temperatureOutput", eventMessage);
+                    if (insights) telemetryClient.GetMetric("SendEvent").TrackValue(1);
                     count++;
                 }
 

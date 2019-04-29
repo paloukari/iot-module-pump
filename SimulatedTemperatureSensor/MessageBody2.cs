@@ -25,17 +25,20 @@ namespace SimulatedTemperatureSensor
         [JsonProperty(PropertyName = "timeStamp")]
         public DateTime TimeStamp { get; set; }
 
-        [JsonProperty(PropertyName = "machineTemperature")]
-        public SensorReading MachineTemperature { get; set; }
+        [JsonProperty(PropertyName = "temperature")]
+        public SensorReading Temperature { get; set; }
 
-        [JsonProperty(PropertyName = "machinePressure")]
-        public SensorReading MachinePressure { get; set; }
+        [JsonProperty(PropertyName = "pressure")]
+        public SensorReading Pressure { get; set; }
 
-        [JsonProperty(PropertyName = "ambientTemperature")]
-        public SensorReading AmbientTemperature { get; set; }
+        [JsonProperty(PropertyName = "suctionPressure")]
+        public SensorReading SuctionPressure { get; set; }
 
-        [JsonProperty(PropertyName = "ambientHumdity")]
-        public SensorReading AmbientHumdity { get; set; }
+        [JsonProperty(PropertyName = "dischargePressure")]
+        public SensorReading DischargePressure { get; set; }
+
+        [JsonProperty(PropertyName = "flow")]
+        public SensorReading Flow { get; set; }
     }
 
     public class SensorReading

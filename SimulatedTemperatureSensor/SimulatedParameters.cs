@@ -4,13 +4,13 @@ namespace SimulatedTemperatureSensor
 {
     class SimulatorParameters
     {
-        public double MachineTempMin { get; set; }
+        public double TempMin { get; set; }
 
-        public double MachineTempMax { get; set; }
+        public double TempMax { get; set; }
 
-        public double MachinePressureMin { get; set; }
+        public double PressureMin { get; set; }
 
-        public double MachinePressureMax { get; set; }
+        public double PressureMax { get; set; }
 
         public double AmbientTemp { get; set; }
 
@@ -32,22 +32,16 @@ namespace SimulatedTemperatureSensor
                 machineTempMax = 100;
             }
 
-            double machinePressureMin;
-            if (!double.TryParse(appSettings["machinePressureMin"], out machinePressureMin))
+            double pressureMin;
+            if (!double.TryParse(appSettings["machinePressureMin"], out pressureMin))
             {
-                machinePressureMin = 1;
+                pressureMin = 1;
             }
 
-            double machinePressureMax;
-            if (!double.TryParse(appSettings["machinePressureMax"], out machinePressureMax))
+            double pressureMax;
+            if (!double.TryParse(appSettings["machinePressureMax"], out pressureMax))
             {
-                machinePressureMax = 10;
-            }
-
-            double ambientTemp;
-            if (!double.TryParse(appSettings["ambientTemp"], out ambientTemp))
-            {
-                ambientTemp = 21;
+                pressureMax = 10;
             }
 
             int HumidityPercent;
@@ -58,11 +52,10 @@ namespace SimulatedTemperatureSensor
 
             return new SimulatorParameters
             {
-                MachineTempMin = machineTempMin,
-                MachineTempMax = machineTempMax,
-                MachinePressureMin = machinePressureMin,
-                MachinePressureMax = machinePressureMax,
-                AmbientTemp = ambientTemp,
+                TempMin = machineTempMin,
+                TempMax = machineTempMax,
+                PressureMin = pressureMin,
+                PressureMax = pressureMax,
                 HumidityPercent = HumidityPercent
             };
         }

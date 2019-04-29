@@ -3,27 +3,48 @@
         "$edgeAgent": {
             "properties.desired": {
                 "modules": {
-                    "SimulatedTemperatureSensor": {
+                    "interface1": {
                         "settings": {
-                            "image": "<your_registry>/simulated-win-sensor:2.1",
+                            "image": "simulated-win-sensor:1.0",
                             "createOptions": ""
                         },
                         "type": "docker",
+                        "version": "1.0",
+                        "env": {
+                            "ASSET": {
+                                "value": "olympus"
+                            },
+                            "DEVICE": {
+                                "value": "OL-GEN-INST"
+                            }  
+                        },
                         "status": "running",
-                        "restartPolicy": "always",
-                        "version": "1.0"
+                        "restartPolicy": "always"
+                    },
+                    "interface2": {
+                        "settings": {
+                            "image": "simulated-win-sensor:1.0",
+                            "createOptions": ""
+                        },
+                        "type": "docker",
+                        "version": "1.0",
+                        "env": {
+                            "ASSET": {
+                                "value": "camelot"
+                            },
+                            "DEVICE": {
+                                "value": "CA-GEN-INST"
+                            }
+                        },
+                        "status": "running",
+                        "restartPolicy": "always"
                     }
                 },
                 "runtime": {
                     "settings": {
                         "minDockerVersion": "v1.25"
                     },
-                    "type": "docker",
-                    "env": {
-                        "MessageCount": {
-                            "value": "-1"
-                        }
-                    }
+                    "type": "docker"
                 },
                 "schemaVersion": "1.0",
                 "systemModules": {
@@ -49,7 +70,9 @@
         "$edgeHub": {
             "properties.desired": {
                 "routes": {
-                    "tempsensor": "FROM /messages/modules/SimulatedTemperatureSensor/outputs/* INTO $upstream"
+                    "interface1": "FROM /messages/modules/interface1/outputs/* INTO $upstream",
+                    "interface2": "FROM /messages/modules/interface2/outputs/* INTO $upstream",
+                    "upstream": "FROM /messages/* INTO $upstream"
                 },
                 "schemaVersion": "1.0",
                 "storeAndForwardConfiguration": {
@@ -57,7 +80,13 @@
                 }
             }
         },
-        "SimulatedTemperatureSensor": {
+        "interface1": {
+            "properties.desired": {
+                "SendData": true,
+                "SendInterval": 5
+            }
+        },
+        "interface2": {
             "properties.desired": {
                 "SendData": true,
                 "SendInterval": 5

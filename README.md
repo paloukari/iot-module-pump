@@ -68,18 +68,24 @@ Edit and update the IoT Edge daemon configuration file `C:\ProgramData\iotedge\c
 
 ```yaml
 connect:
-  management_uri: "http://192.168.1.159:15580"
-  workload_uri: "http://192.168.1.159:15581"
+  management_uri: "http://10.0.1.4:15580"
+  workload_uri: "http://10.0.1.4:15581"
 
 listen:
-  management_uri: "http://192.168.1.159:15580"
-  workload_uri: "http://192.168.1.159:15581"
+  management_uri: "http://10.0.1.4:15580"
+  workload_uri: "http://10.0.1.4:15581"
+```
+
+Disable the firewall (**Temporary Fix)
+
+```powershell
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 ```
 
 Create an environment variable IOTEDGE_HOST with the management_uri address to allow the iotedge cli to connect to the new management endpoint and then restart the iotedge service.
 
 ```powershell
-[Environment]::SetEnvironmentVariable("IOTEDGE_HOST", "http://192.168.1.159:15580")
+[Environment]::SetEnvironmentVariable("IOTEDGE_HOST", "http://10.0.1.4:15580")
 
 stop-service iotedge
 start-service iotedge
@@ -108,8 +114,8 @@ iotedge list
 ```powershell
 # Setup the Environment Variables
 #----------------------------------
-$Env:Device = "edge-windows"
-$Env:Hub = "<your_registry>"
+$Env:Device = "<your_edge_device>"
+$Env:Hub = "<your_hub>"
 
 # Deploy the Module
 #----------------------------------
