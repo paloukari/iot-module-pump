@@ -158,31 +158,32 @@ namespace SimulatedTemperatureSensor
                         {
                             Value = currentTemp,
                             Units = "degC",
-                            Status = 200
+                            Status = 192
                         },
                         Pressure = new SensorReading
                         {
                             Value = sim.PressureMin + ((currentTemp - sim.TempMin) * normal),
                             Units = "psig",
-                            Status = 200
+                            Status = 192
                         },
                         SuctionPressure = new SensorReading
                         {
                             Value = sim.PressureMin + 4 + ((currentTemp - sim.TempMin) * normal),
                             Units = "psig",
-                            Status = 200
+                            Status = 192
                         },
                         DischargePressure = new SensorReading
                         {
                             Value = sim.PressureMin + 1 + ((currentTemp - sim.TempMin) * normal),
                             Units = "psig",
-                            Status = 200
+                            Status = 192
                         },
                         Flow = new SensorReading
                         {
                             Value = Rnd.Next(78, 82),
                             Units = "perc",
-                            Status = 200
+                            Status = 192,
+                            Misc = "GOOD"
                         }
                     });
 
