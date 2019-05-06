@@ -79,12 +79,11 @@ listen:
 Disable the firewall (**Temporary Fix)
 
 ```powershell
-## Outbound Ports required 443, 8883, 5671
 ## Inbound Ports required 15580, 15581
 New-NetFirewallRule -DisplayName "IoT Edge" -Direction Inbound -LocalPort 15580,15581 -Protocol TCP -Action Allow
-New-NetFirewallRule -DisplayName "IoT Edge" -Direction Outbound -LocalPort 443,8883,5671 -Protocol TCP -Action Allow
 
-Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+## Outbound Ports required 443, 8883, 5671
+New-NetFirewallRule -DisplayName "IoT Edge" -Direction Outbound -LocalPort 443,8883,5671 -Protocol TCP -Action Allow
 ```
 
 Create an environment variable IOTEDGE_HOST with the management_uri address to allow the iotedge cli to connect to the new management endpoint and then restart the iotedge service.
