@@ -1,0 +1,83 @@
+# Create a Service Principal
+# az ad sp create-for-rbac --name TSI-API
+
+# settings.json
+# -------------------------------------
+# "rest-client.environmentVariables": {
+#   "local": {
+#     "TENANT_ID": "<tenant_id>",
+#      "CLIENT_ID": "<client_id>",
+#      "CLIENT_SECRET": "<client_secret>"
+#   }
+# }
+# -------------------------------------
+
+
+@authUrl = login.microsoftonline.com/{{TENANT_ID}}
+@tsiApi = https%3A%2F%2Fapi.timeseries.azure.com%2F
+
+###
+# @name tsiLogin
+POST https://{{authUrl}}/oauth2/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id={{CLIENT_ID}}&client_secret={{CLIENT_SECRET}}&resource={{tsiApi}}
+
+###
+@tsiToken = {{tsiLogin.response.body.access_token}}
+
+###
+
+# @name environments
+GET https://api.timeseries.azure.com/environments?api-version=2016-12-12
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+###
+@myEnv = {{environments.response.body.environments[0].environmentId}}
+
+
+###
+POST https://{{myEnv}}.env.timeseries.azure.com/timeseries/types/$batch?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+{
+  "put": [
+    {
+      "name": "OutdoorTemperatureSensor",
+      "description": "This is an outdoor temperature sensor.",
+      "variables": {
+        "AverageTemperature": {
+          "kind": "numeric",
+          "value": {
+            "tsx": "$event.Temperature.Double"
+          },
+          "filter": {
+            "tsx": "$event.Mode.String = 'outdoor'"
+          },
+          "aggregation": {
+            "tsx": "avg($value)"
+          }
+        }
+      }
+  }]
+}
+
+###
+# @name models
+GET https://{{myEnv}}.env.timeseries.azure.com/timeseries/types?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+
+###
+POST https://{{myEnv}}.env.timeseries.azure.com/timeseries/types/$batch?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+{
+  "delete": {
+    "names": ["OutdoorTemperatureSensor"]
+  }
+}
