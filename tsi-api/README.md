@@ -37,6 +37,6 @@ az ad sp create-for-rbac --name $SP_NAME
 }
 ```
 
-## Send the requests in the desired {file}.http
+## Send the requests via the desired {file}.http
 
-1. model.http  _(Examples for creating Types and Hiearchies)_
+__model.http__  _(Examples for creating Types and Hiearchies)_
