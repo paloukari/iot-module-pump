@@ -1,0 +1,160 @@
+# -----------------------
+# Authentication
+# -----------------------
+
+@authUrl = login.microsoftonline.com/{{TENANT_ID}}
+@tsiApi = https%3A%2F%2Fapi.timeseries.azure.com%2F
+
+###
+# @name tsiLogin
+POST https://{{authUrl}}/oauth2/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id={{CLIENT_ID}}&client_secret={{CLIENT_SECRET}}&resource={{tsiApi}}
+
+###
+@tsiToken = {{tsiLogin.response.body.access_token}}
+
+
+
+
+# -----------------------
+# Environments
+# -----------------------
+
+###
+# @name environments
+GET https://api.timeseries.azure.com/environments?api-version=2016-12-12
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+###
+@myEnv = {{environments.response.body.environments[0].environmentId}}
+
+
+
+
+# -----------------------
+# Types
+# -----------------------
+
+###
+# @name types
+POST https://{{myEnv}}.env.timeseries.azure.com/timeseries/types/$batch?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+{
+  "put": [
+    {
+      "name": "OutdoorTemperatureSensor",
+      "description": "This is an outdoor temperature sensor.",
+      "variables": {
+        "AverageTemperature": {
+          "kind": "numeric",
+          "value": {
+            "tsx": "$event.Temperature.Double"
+          },
+          "filter": {
+            "tsx": "$event.Mode.String = 'outdoor'"
+          },
+          "aggregation": {
+            "tsx": "avg($value)"
+          }
+        }
+      }
+  }]
+}
+
+###
+POST https://{{myEnv}}.env.timeseries.azure.com/timeseries/types/$batch?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+{
+  "get": {
+    "names": [
+        "OutdoorTemperatureSensor"
+    ]
+  }
+}
+
+###
+POST https://{{myEnv}}.env.timeseries.azure.com/timeseries/types/$batch?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+{
+  "delete": {
+    "names": ["OutdoorTemperatureSensor"]
+  }
+}
+
+###
+GET https://{{myEnv}}.env.timeseries.azure.com/timeseries/types?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+
+
+
+
+# -----------------------
+# Hiearchy
+# -----------------------
+
+###
+# @name hiearchy
+POST https://{{myEnv}}.env.timeseries.azure.com/timeseries/hierarchies/$batch?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+{
+  "put": [
+    {
+      "id": "6e292e54-9a26-4be1-9034-607d71492707",
+      "name": "PhysicalLocation",
+      "source": {
+        "instanceFieldNames": [
+          "Owner",
+          "Unit",
+          "Asset",
+          "System",
+          "Instrument"
+        ]
+      }
+    }
+  ]
+}
+
+###
+POST https://{{myEnv}}.env.timeseries.azure.com/timeseries/hierarchies/$batch?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+{
+  "get": {
+    "names": [
+        "PhysicalLocation"
+    ]
+  }
+}
+
+
+###
+POST https://{{myEnv}}.env.timeseries.azure.com/timeseries/hierarchies/$batch?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
+
+{
+  "delete": {
+    "names": [
+      "PhysicalLocation"
+    ]
+  }
+}
+
+###
+GET https://{{myEnv}}.env.timeseries.azure.com/timeseries/hierarchies?api-version=2018-11-01-preview
+Authorization: Bearer {{tsiToken}}
+Content-Type: application/json
