@@ -21,6 +21,10 @@ az ad sp create-for-rbac --name $SP_NAME
 }
 ```
 
+## Grant access for the Service Principal
+
+[Provide access](https://docs.microsoft.com/en-us/azure/time-series-insights/time-series-insights-data-access) to the Service Principal for the Time Series Environment.
+
 ## Edit VS Code Settings File to store local variables
 
 ```json
