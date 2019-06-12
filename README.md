@@ -11,22 +11,6 @@ This is a modified simulated temperature sensor to test the ability to deploy a 
 - Class Library: __Microsoft.Azure.Devices.Edge.Util__
     - Target Framework: _.NET Standard 2.0_
 
-## Build and Push the Module to a Registry
-
-The module needs to be built on Windows System running Windows Containers.
-
-```powershell
-# Setup the Environment Variables
-#----------------------------------
-$Env:Registry = "<your_registry>"
-$Env:Version = "2.1"
-
-# Build and Push the Module Image
-#----------------------------------
-docker build -t $Env:Registry/simulated-win-sensor:$Env:Version .
-docker push $Env:Registry/simulated-win-sensor:$Env:Version
-```
-
 ## Install and Start the IoT Edge Runtime
 
 Install the Azure IoT Edge runtime on your IoT Edge device and configure it with a device connection string. 
@@ -98,14 +82,31 @@ get-service iotedge
 iotedge list
 ```
 
+## Build and Push the Module to a Registry
+
+The module needs to be built on Windows System running Windows Containers.
+
+```bash
+# Login to the Registry
+az acr login --name <registry_name>
+
+# Build the module with ACR
+cd modules
+az acr run --registry <registry_name> --platform windows --file build.yaml .
+
+# Build the module with Docker
+cd modules/PumpModule
+docker build -t simulated-pump-win .
+```
+
 ## Deploy the Module to the Edge Device
 
 > Modify the module image name in the manifest file as necessary based on the __registry__ used.
 
 ```json
-"SimulatedTemperatureSensor": {
+"SimulatedPump": {
     "settings": {
-        "image": "<your_registry>/simulated-win-sensor:2.1",
+        "image": "<your_registry>/pump-sensor:2.1",
         "createOptions": ""
     },
     "type": "docker",
@@ -116,16 +117,14 @@ iotedge list
 ```
 
 ```powershell
-# Setup the Environment Variables
-#----------------------------------
-$Env:Device = "<your_edge_device>"
-$Env:Hub = "<your_hub>"
+$Device = "<your_edge_device>"
+$Hub = "<your_hub>"
 
 # Deploy the Module
 #----------------------------------
 az iot edge set-modules `
-    --device-id $Env:Device `
-    --hub-name $Env:Hub `
+    --device-id $Device `
+    --hub-name $Hub `
     --content manifest.json
 ```
 
@@ -134,11 +133,11 @@ az iot edge set-modules `
 ```json
 [
     {
-        "asset": "PoC",
+        "asset": "whidbey",
         "source": "Simulator",
         "events": [
             {
-                "deviceId": "86EB0F6A7C60",
+                "deviceId": "pump_simulator_01",
                 "timeStamp": "2019-04-26T14:36:12.0218344Z",
                 "machineTemperature": {
                     "value": 22.971214394420951,

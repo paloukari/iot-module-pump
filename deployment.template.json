@@ -1,0 +1,103 @@
+{
+  "modulesContent": {
+    "$edgeAgent": {
+      "properties.desired": {
+        "modules": {
+          "simulatedpump1": {
+            "settings": {
+              "image": "pump-simulator:1.0",
+              "createOptions": ""
+            },
+            "type": "docker",
+            "version": "1.0",
+            "env": {
+              "ASSET": {
+                "value": "whidbey"
+              },
+              "DEVICE": {
+                "value": "pump_simulator_01"
+              }
+            },
+            "status": "running",
+            "restartPolicy": "always"
+          },
+          "simulatedpump2": {
+            "settings": {
+              "image": "pump-simulator:1.0",
+              "createOptions": ""
+            },
+            "type": "docker",
+            "version": "1.0",
+            "env": {
+              "ASSET": {
+                "value": "bainbridge"
+              },
+              "DEVICE": {
+                "value": "pump_simulator_02"
+              }
+            },
+            "status": "running",
+            "restartPolicy": "always"
+          }
+        },
+        "runtime": {
+          "settings": {
+            "minDockerVersion": "v1.25",
+            "registryCredentials": {
+              "$CONTAINER_REGISTRY_USERNAME": {
+                "username": "$CONTAINER_REGISTRY_USERNAME",
+                "password": "$CONTAINER_REGISTRY_PASSWORD",
+                "address": "$CONTAINER_REGISTRY_SERVER"
+              }
+            }
+          },
+          "type": "docker"
+        },
+        "schemaVersion": "1.0",
+        "systemModules": {
+          "edgeAgent": {
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.0",
+              "createOptions": ""
+            },
+            "type": "docker"
+          },
+          "edgeHub": {
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-hub:1.0",
+              "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
+            },
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always"
+          }
+        }
+      }
+    },
+    "$edgeHub": {
+      "properties.desired": {
+        "routes": {
+          "simulatedpump1": "FROM /messages/modules/simulatedpump1/outputs/* INTO $upstream",
+          "simulatedpump2": "FROM /messages/modules/simulatedpump2/outputs/* INTO $upstream",
+          "upstream": "FROM /messages/* INTO $upstream"
+        },
+        "schemaVersion": "1.0",
+        "storeAndForwardConfiguration": {
+          "timeToLiveSecs": 7200
+        }
+      }
+    },
+    "simulatedpump1": {
+      "properties.desired": {
+        "SendData": true,
+        "SendInterval": 5
+      }
+    },
+    "simulatedpump2": {
+      "properties.desired": {
+        "SendData": true,
+        "SendInterval": 5
+      }
+    }
+  }
+}

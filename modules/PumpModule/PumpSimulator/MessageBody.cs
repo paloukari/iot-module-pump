@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SimulatedTemperatureSensor
+namespace PumpSimulator
 {
     public class MessageBody
     {

@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SimulatedTemperatureSensor
+namespace PumpSimulator
 {
     class Program
     {
@@ -34,7 +34,7 @@ namespace SimulatedTemperatureSensor
 
         static async Task<int> MainAsync()
         {
-            Console.WriteLine("SimulatedTemperatureSensor Main() started.");
+            Console.WriteLine("PumpSimulator Main() started.");
             var appSettings = ConfigurationManager.AppSettings;
 
             // Setup App Insights
@@ -44,8 +44,8 @@ namespace SimulatedTemperatureSensor
                 insights = true;
                 telemetryClient = new TelemetryClient();
                 telemetryClient.Context.Device.Id = Environment.MachineName;
-                telemetryClient.TrackEvent("SimulatedTemperatureSensor started");
-                telemetryClient.GetMetric("SimulatorCount").TrackValue(1);  
+                telemetryClient.TrackEvent("Simulator started");
+                telemetryClient.GetMetric("PumpCount").TrackValue(1);  
             }
 
 
@@ -189,7 +189,7 @@ namespace SimulatedTemperatureSensor
 
                     var tempData = new MessageBody
                     {
-                        Asset = Environment.GetEnvironmentVariable("ASSET") ?? "PoC",
+                        Asset = Environment.GetEnvironmentVariable("ASSET") ?? "whidbey",
                         Source = "Simulator",
                         Events = events
                     };

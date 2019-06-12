@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.Devices.Edg
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Azure.Devices.Edge.ModuleUtil", "Microsoft.Azure.Devices.Edge.ModuleUtil\Microsoft.Azure.Devices.Edge.ModuleUtil.csproj", "{CDD5A377-CD80-41BE-9B8D-ED80C07DC1AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatedTemperatureSensor", "SimulatedTemperatureSensor\SimulatedTemperatureSensor.csproj", "{2C524A40-1636-4ABB-B9EC-7F9E0AFB7223}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PumpSimulator", "PumpSimulator\PumpSimulator.csproj", "{2C524A40-1636-4ABB-B9EC-7F9E0AFB7223}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF190A7A-B364-4602-9EC1-BEF9F283C0E2}"
 	ProjectSection(SolutionItems) = preProject

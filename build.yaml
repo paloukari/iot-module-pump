@@ -1,7 +1,0 @@
-version: 1.0-preview-1
-steps:
-  - build: -t {{.Run.Registry}}/simulated-win-sensor:{{.Run.ID}} -t {{.Run.Registry}}/simulated-win-sensor:latest -f Dockerfile .
-    timeout: 600
-  - push:
-    - {{.Run.Registry}}/simulated-win-sensor:{{.Run.ID}}
-    - {{.Run.Registry}}/simulated-win-sensor:latest

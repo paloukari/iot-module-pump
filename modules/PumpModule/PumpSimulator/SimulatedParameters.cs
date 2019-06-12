@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace SimulatedTemperatureSensor
+namespace PumpSimulator
 {
     class SimulatorParameters
     {
