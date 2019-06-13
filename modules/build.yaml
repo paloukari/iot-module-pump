@@ -1,7 +1,7 @@
     
 version: v1.0.0
 steps:
-  - build: -t {{.Run.Registry}}/module-pump-win:{{.Run.ID}} -t {{.Run.Registry}}/module-pump-win:latest-f ./PumpModule/Dockerfile ./PumpModule
+  - build: -t {{.Run.Registry}}/module-pump-win:{{.Run.ID}} -t {{.Run.Registry}}/module-pump-win:latest -f ./PumpModule/Dockerfile ./PumpModule
     timeout: 2000
   - push:
     - {{.Run.Registry}}/module-pump-win:{{.Run.ID}}
