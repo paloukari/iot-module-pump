@@ -1,6 +1,6 @@
-# SimulatedTemperatureSensor
+# Pump Module
 
-This is a modified simulated temperature sensor to test the ability to deploy a module to an IoTEdge Windows OS with the module compiled using the dotnet framework instead of dotnet core.
+This is a modified simulated pump module to test the ability to deploy a module to an IoTEdge Windows OS with the module compiled using the dotnet framework instead of dotnet core.
 
 - Console Application:  __SimulatedTemperatureSensor__
     - Target Framework: _.NET Framework 4.7.2_
@@ -127,6 +127,13 @@ az iot edge set-modules `
     --hub-name $Hub `
     --content manifest.json
 ```
+
+To utilize docker client on the windows server the docker host must be set properly for Moby.
+
+```powershell
+[Environment]::SetEnvironmentVariable("DOCKER_HOST", "npipe:////./pipe/iotedge_moby_engine")
+```
+
 
 ## Example Message Format
 

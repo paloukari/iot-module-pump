@@ -2,6 +2,6 @@
 version: v1.0.0
 steps:
   - build: -t {{.Run.Registry}}/simulated-pump-win:{{.Run.ID}} -f ./PumpModule/Dockerfile ./PumpModule
-    timeout: 1000
+    timeout: 2000
   - push:
     - {{.Run.Registry}}/simulated-pump-win:{{.Run.ID}}
