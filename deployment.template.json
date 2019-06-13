@@ -5,7 +5,7 @@
         "modules": {
           "simulatedpump1": {
             "settings": {
-              "image": "pump-simulator:1.0",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
               "createOptions": ""
             },
             "type": "docker",
@@ -23,7 +23,7 @@
           },
           "simulatedpump2": {
             "settings": {
-              "image": "pump-simulator:1.0",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
               "createOptions": ""
             },
             "type": "docker",
