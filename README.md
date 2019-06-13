@@ -25,6 +25,23 @@ cd modules
 az acr run --registry <registry_name> --platform windows --file build.yaml .
 ```
 
+>Note:  Build Time est:  14:30 minutes
+
+### Create the Deployment Manifest
+
+Update the .env settings file with the proper values
+
+```
+# CONNECTION STRINGS
+IOTHUB_CONNECTION_STRING=""
+
+# CONTAINER REGISTRY
+CONTAINER_REGISTRY_SERVER=""
+CONTAINER_REGISTRY_USERNAME=""
+CONTAINER_REGISTRY_PASSWORD="
+```
+
+
 ### Deploy the Module to the Edge Device
 
 > Modify the module image name in the manifest file as necessary based on the __registry__ used.
