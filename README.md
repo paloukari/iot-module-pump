@@ -93,10 +93,6 @@ az acr login --name <registry_name>
 # Build the module with ACR
 cd modules
 az acr run --registry <registry_name> --platform windows --file build.yaml .
-
-# Build the module with Docker
-cd modules/PumpModule
-docker build -t simulated-pump-win .
 ```
 
 ## Deploy the Module to the Edge Device
@@ -106,7 +102,7 @@ docker build -t simulated-pump-win .
 ```json
 "SimulatedPump": {
     "settings": {
-        "image": "<your_registry>/pump-sensor:2.1",
+        "image": "<your_registry>/module-pump-win:latest",
         "createOptions": ""
     },
     "type": "docker",
