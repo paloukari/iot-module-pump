@@ -12,7 +12,7 @@
             "version": "1.0",
             "env": {
               "ASSET": {
-                "value": "whidbey"
+                "value": "camano"
               },
               "DEVICE": {
                 "value": "pump_simulator_01"
@@ -30,10 +30,46 @@
             "version": "1.0",
             "env": {
               "ASSET": {
-                "value": "bainbridge"
+                "value": "camano"
               },
               "DEVICE": {
                 "value": "pump_simulator_02"
+              }
+            },
+            "status": "running",
+            "restartPolicy": "always"
+          },
+          "simulatedpump3": {
+            "settings": {
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
+              "createOptions": ""
+            },
+            "type": "docker",
+            "version": "1.0",
+            "env": {
+              "ASSET": {
+                "value": "camano"
+              },
+              "DEVICE": {
+                "value": "pump_simulator_03"
+              }
+            },
+            "status": "running",
+            "restartPolicy": "always"
+          },
+          "simulatedpump4": {
+            "settings": {
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
+              "createOptions": ""
+            },
+            "type": "docker",
+            "version": "1.0",
+            "env": {
+              "ASSET": {
+                "value": "camano"
+              },
+              "DEVICE": {
+                "value": "pump_simulator_04"
               }
             },
             "status": "running",
@@ -79,6 +115,8 @@
         "routes": {
           "simulatedpump1": "FROM /messages/modules/simulatedpump1/outputs/* INTO $upstream",
           "simulatedpump2": "FROM /messages/modules/simulatedpump2/outputs/* INTO $upstream",
+          "simulatedpump3": "FROM /messages/modules/simulatedpump3/outputs/* INTO $upstream",
+          "simulatedpump4": "FROM /messages/modules/simulatedpump4/outputs/* INTO $upstream",
           "upstream": "FROM /messages/* INTO $upstream"
         },
         "schemaVersion": "1.0",
@@ -94,6 +132,18 @@
       }
     },
     "simulatedpump2": {
+      "properties.desired": {
+        "SendData": true,
+        "SendInterval": 5
+      }
+    },
+    "simulatedpump3": {
+      "properties.desired": {
+        "SendData": true,
+        "SendInterval": 5
+      }
+    },
+    "simulatedpump4": {
       "properties.desired": {
         "SendData": true,
         "SendInterval": 5

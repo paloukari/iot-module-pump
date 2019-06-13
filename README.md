@@ -41,6 +41,7 @@ CONTAINER_REGISTRY_USERNAME=""
 CONTAINER_REGISTRY_PASSWORD="
 ```
 
+Configure the Deployment Template using VS Code
 
 ### Deploy the Module to the Edge Device
 
@@ -84,6 +85,96 @@ To utilize docker client on the windows server the docker host must be set prope
 [
     {
         "asset": "whidbey",
+        "source": "Simulator",
+        "events": [
+            {
+                "deviceId": "pump_simulator_01",
+                "timeStamp": "2019-04-26T14:36:12.0218344Z",
+                "machineTemperature": {
+                    "value": 22.971214394420951,
+                    "units": "degC",
+                    "status": 200
+                },
+                "machinePressure": {
+                    "value": 1.2245687284783362,
+                    "units": "psig",
+                    "status": 200
+                },
+                "ambientTemperature": {
+                    "value": 21.248441741218997,
+                    "units": "degC",
+                    "status": 200
+                },
+                "ambientHumdity": {
+                    "value": 26.0,
+                    "units": "perc",
+                    "status": 200
+                }
+            }
+        ]
+    },
+    {
+        "asset": "bainbridge",
+        "source": "Simulator",
+        "events": [
+            {
+                "deviceId": "pump_simulator_01",
+                "timeStamp": "2019-04-26T14:36:12.0218344Z",
+                "machineTemperature": {
+                    "value": 22.971214394420951,
+                    "units": "degC",
+                    "status": 200
+                },
+                "machinePressure": {
+                    "value": 1.2245687284783362,
+                    "units": "psig",
+                    "status": 200
+                },
+                "ambientTemperature": {
+                    "value": 21.248441741218997,
+                    "units": "degC",
+                    "status": 200
+                },
+                "ambientHumdity": {
+                    "value": 26.0,
+                    "units": "perc",
+                    "status": 200
+                }
+            }
+        ]
+    },
+    {
+        "asset": "fidalgo",
+        "source": "Simulator",
+        "events": [
+            {
+                "deviceId": "pump_simulator_01",
+                "timeStamp": "2019-04-26T14:36:12.0218344Z",
+                "machineTemperature": {
+                    "value": 22.971214394420951,
+                    "units": "degC",
+                    "status": 200
+                },
+                "machinePressure": {
+                    "value": 1.2245687284783362,
+                    "units": "psig",
+                    "status": 200
+                },
+                "ambientTemperature": {
+                    "value": 21.248441741218997,
+                    "units": "degC",
+                    "status": 200
+                },
+                "ambientHumdity": {
+                    "value": 26.0,
+                    "units": "perc",
+                    "status": 200
+                }
+            }
+        ]
+    },
+    {
+        "asset": "camano",
         "source": "Simulator",
         "events": [
             {
