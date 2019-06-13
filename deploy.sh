@@ -7,7 +7,7 @@
 ###############################
 ## ARGUMENT INPUT            ##
 ###############################
-usage() { echo "Usage: deploy.sh <iot_hub> <edge_vm>" 1>&2; exit 1; }
+usage() { echo "Usage: deploy.sh <iot_hub> <device>" 1>&2; exit 1; }
 
 if [ ! -z $1 ]; then IOT_HUB=$1; fi
 if [ -z $IOT_HUB ]; then

@@ -1,5 +1,5 @@
 # escape=`
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2 AS builder
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2-windowsservercore-ltsc2019 AS builder
 WORKDIR C:\src\edge-module
 
 COPY . ./
@@ -14,7 +14,7 @@ RUN MSBuild.exe PumpSimulator.sln /t:restore
 RUN MSBuild.exe PumpSimulator.sln /t:build /p:Configuration=Release /p:OutputPath=C:\out
 
 # app image
-FROM mcr.microsoft.com/dotnet/framework/runtime:4.7.2
+FROM mcr.microsoft.com/dotnet/framework/runtime:4.7.2-windowsservercore-ltsc2019
 WORKDIR C:\edge-module  
 COPY --from=builder C:\out .  
 ENTRYPOINT ["PumpSimulator.exe"] 
