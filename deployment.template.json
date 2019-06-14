@@ -5,7 +5,7 @@
         "modules": {
           "pump1": {
             "settings": {
-              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.0",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.1",
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
@@ -36,7 +36,7 @@
           },
           "pump2": {
             "settings": {
-              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.0",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.1",
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
@@ -67,7 +67,7 @@
           },
           "pump3": {
             "settings": {
-              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.0",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.1",
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
@@ -98,7 +98,7 @@
           },
           "pump4": {
             "settings": {
-              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.0",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.1",
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
@@ -180,25 +180,33 @@
     "pump1": {
       "properties.desired": {
         "SendData": true,
-        "SendInterval": 1
+        "SendInterval": 1,
+        "MessageCount": -1,
+        "EventCount": 2
       }
     },
     "pump2": {
       "properties.desired": {
         "SendData": true,
-        "SendInterval": 1
+        "SendInterval": 1,
+        "MessageCount": -1,
+        "EventCount": 1
       }
     },
     "pump3": {
       "properties.desired": {
         "SendData": true,
-        "SendInterval": 1
+        "SendInterval": 1,
+        "MessageCount": -1,
+        "EventCount": 1
       }
     },
     "pump4": {
       "properties.desired": {
         "SendData": true,
-        "SendInterval": 1
+        "SendInterval": 1,
+        "MessageCount": -1,
+        "EventCount": 2
       }
     }
   }
