@@ -60,7 +60,7 @@ namespace PumpSimulator
             {
                 if (!int.TryParse(appSettings[MessageCountConfigKey], out messageCount))
                 {
-                    messageCount = 500;
+                    messageCount = -1;
                 }
             }
 
@@ -158,39 +158,76 @@ namespace PumpSimulator
                         {
                             Value = currentTemp,
                             Units = "degC",
-                            Status = 192
+                            Status = 200
                         },
                         Pressure = new SensorReading
                         {
                             Value = sim.PressureMin + ((currentTemp - sim.TempMin) * normal),
                             Units = "psig",
-                            Status = 192
+                            Status = 200
                         },
                         SuctionPressure = new SensorReading
                         {
                             Value = sim.PressureMin + 4 + ((currentTemp - sim.TempMin) * normal),
                             Units = "psig",
-                            Status = 192
+                            Status = 200
                         },
                         DischargePressure = new SensorReading
                         {
                             Value = sim.PressureMin + 1 + ((currentTemp - sim.TempMin) * normal),
                             Units = "psig",
-                            Status = 192
+                            Status = 200
                         },
                         Flow = new SensorReading
                         {
                             Value = Rnd.Next(78, 82),
                             Units = "perc",
-                            Status = 192,
-                            Misc = "GOOD"
+                            Status = 200
+                        }
+                    });
+
+                    currentTemp += -0.25 + (Rnd.NextDouble() * 1.5);
+
+                    events.Add(new MessageEvent
+                    {
+                        DeviceId = Environment.GetEnvironmentVariable("DEVICE") ?? Environment.MachineName,
+                        TimeStamp = DateTime.UtcNow,
+                        Temperature = new SensorReading
+                        {
+                            Value = currentTemp,
+                            Units = "degC",
+                            Status = 200
+                        },
+                        Pressure = new SensorReading
+                        {
+                            Value = sim.PressureMin + ((currentTemp - sim.TempMin) * normal),
+                            Units = "psig",
+                            Status = 200
+                        },
+                        SuctionPressure = new SensorReading
+                        {
+                            Value = sim.PressureMin + 4 + ((currentTemp - sim.TempMin) * normal),
+                            Units = "psig",
+                            Status = 200
+                        },
+                        DischargePressure = new SensorReading
+                        {
+                            Value = sim.PressureMin + 1 + ((currentTemp - sim.TempMin) * normal),
+                            Units = "psig",
+                            Status = 200
+                        },
+                        Flow = new SensorReading
+                        {
+                            Value = Rnd.Next(78, 82),
+                            Units = "perc",
+                            Status = 200
                         }
                     });
 
                     var tempData = new MessageBody
                     {
                         Asset = Environment.GetEnvironmentVariable("ASSET") ?? "whidbey",
-                        Source = "Simulator",
+                        Source = Environment.MachineName,
                         Events = events
                     };
 
@@ -199,10 +236,11 @@ namespace PumpSimulator
                     eventMessage.Properties.Add("sequenceNumber", count.ToString());
                     eventMessage.Properties.Add("batchId", BatchId.ToString());
                     eventMessage.Properties.Add("asset", tempData.Asset);
-                    Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Body: [{dataBuffer}]");
+                    var size = eventMessage.GetBytes().Length;
+                    Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}, Body: [{dataBuffer}]");
 
                     await moduleClient.SendEventAsync("temperatureOutput", eventMessage);
-                    if (insights) telemetryClient.GetMetric("SendEvent").TrackValue(1);
+                    if (insights) telemetryClient.GetMetric("SendMessage").TrackValue(1);
                     count++;
                 }
 
