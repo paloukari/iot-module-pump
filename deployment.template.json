@@ -3,73 +3,125 @@
     "$edgeAgent": {
       "properties.desired": {
         "modules": {
-          "simulatedpump1": {
+          "pump1": {
             "settings": {
               "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
-              "createOptions": ""
+              "createOptions": {
+                "HostConfig": {
+                  "LogConfig": {
+                    "Type": "json-file",
+                    "Config": {
+                      "max-size": "2m",
+                      "max-file": "3"
+                    }
+                  }
+                }
+              }
             },
             "type": "docker",
             "version": "1.0",
             "env": {
               "ASSET": {
-                "value": "camano"
+                "value": "$ASSET"
               },
               "DEVICE": {
-                "value": "pump_simulator_01"
+                "value": "pump1"
+              },
+              "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                "value": "$APPINSIGHTS_INSTRUMENTATIONKEY"
               }
             },
             "status": "running",
             "restartPolicy": "always"
           },
-          "simulatedpump2": {
+          "pump2": {
             "settings": {
               "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
-              "createOptions": ""
+              "createOptions": {
+                "HostConfig": {
+                  "LogConfig": {
+                    "Type": "json-file",
+                    "Config": {
+                      "max-size": "2m",
+                      "max-file": "3"
+                    }
+                  }
+                }
+              }
             },
             "type": "docker",
             "version": "1.0",
             "env": {
               "ASSET": {
-                "value": "camano"
+                "value": "$ASSET"
               },
               "DEVICE": {
-                "value": "pump_simulator_02"
+                "value": "pump2"
+              },
+              "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                "value": "$APPINSIGHTS_INSTRUMENTATIONKEY"
               }
             },
             "status": "running",
             "restartPolicy": "always"
           },
-          "simulatedpump3": {
+          "pump3": {
             "settings": {
               "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
-              "createOptions": ""
+              "createOptions": {
+                "HostConfig": {
+                  "LogConfig": {
+                    "Type": "json-file",
+                    "Config": {
+                      "max-size": "2m",
+                      "max-file": "3"
+                    }
+                  }
+                }
+              }
             },
             "type": "docker",
             "version": "1.0",
             "env": {
               "ASSET": {
-                "value": "camano"
+                "value": "$ASSET"
               },
               "DEVICE": {
-                "value": "pump_simulator_03"
+                "value": "pump3"
+              },
+              "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                "value": "$APPINSIGHTS_INSTRUMENTATIONKEY"
               }
             },
             "status": "running",
             "restartPolicy": "always"
           },
-          "simulatedpump4": {
+          "pump4": {
             "settings": {
               "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
-              "createOptions": ""
+              "createOptions": {
+                "HostConfig": {
+                  "LogConfig": {
+                    "Type": "json-file",
+                    "Config": {
+                      "max-size": "2m",
+                      "max-file": "3"
+                    }
+                  }
+                }
+              }
             },
             "type": "docker",
             "version": "1.0",
             "env": {
               "ASSET": {
-                "value": "camano"
+                "value": "$ASSET"
               },
               "DEVICE": {
-                "value": "pump_simulator_04"
+                "value": "pump4"
+              },
+              "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                "value": "$APPINSIGHTS_INSTRUMENTATIONKEY"
               }
             },
             "status": "running",
@@ -113,10 +165,10 @@
     "$edgeHub": {
       "properties.desired": {
         "routes": {
-          "simulatedpump1": "FROM /messages/modules/simulatedpump1/outputs/* INTO $upstream",
-          "simulatedpump2": "FROM /messages/modules/simulatedpump2/outputs/* INTO $upstream",
-          "simulatedpump3": "FROM /messages/modules/simulatedpump3/outputs/* INTO $upstream",
-          "simulatedpump4": "FROM /messages/modules/simulatedpump4/outputs/* INTO $upstream",
+          "pump1": "FROM /messages/modules/pump1/outputs/* INTO $upstream",
+          "pump2": "FROM /messages/modules/pump2/outputs/* INTO $upstream",
+          "pump3": "FROM /messages/modules/pump3/outputs/* INTO $upstream",
+          "pump4": "FROM /messages/modules/pump4/outputs/* INTO $upstream",
           "upstream": "FROM /messages/* INTO $upstream"
         },
         "schemaVersion": "1.0",
@@ -125,28 +177,28 @@
         }
       }
     },
-    "simulatedpump1": {
+    "pump1": {
       "properties.desired": {
         "SendData": true,
-        "SendInterval": 5
+        "SendInterval": 1
       }
     },
-    "simulatedpump2": {
+    "pump2": {
       "properties.desired": {
         "SendData": true,
-        "SendInterval": 5
+        "SendInterval": 1
       }
     },
-    "simulatedpump3": {
+    "pump3": {
       "properties.desired": {
         "SendData": true,
-        "SendInterval": 5
+        "SendInterval": 1
       }
     },
-    "simulatedpump4": {
+    "pump4": {
       "properties.desired": {
         "SendData": true,
-        "SendInterval": 5
+        "SendInterval": 1
       }
     }
   }
