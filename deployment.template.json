@@ -5,7 +5,7 @@
         "modules": {
           "pump1": {
             "settings": {
-              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.0",
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
@@ -36,7 +36,7 @@
           },
           "pump2": {
             "settings": {
-              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.0",
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
@@ -67,7 +67,7 @@
           },
           "pump3": {
             "settings": {
-              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.0",
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
@@ -98,7 +98,7 @@
           },
           "pump4": {
             "settings": {
-              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:latest",
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.0",
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
