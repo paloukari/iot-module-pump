@@ -53,7 +53,7 @@ namespace PumpSimulator
 
             if (!TimeSpan.TryParse(appSettings["MessageDelay"], out messageDelay))
             {
-                messageDelay = TimeSpan.FromMilliseconds(1000);
+                messageDelay = TimeSpan.FromSeconds(1);
             }
 
             int messageCount;
@@ -62,7 +62,7 @@ namespace PumpSimulator
             {
                 if (!int.TryParse(appSettings[MessageCountConfigKey], out messageCount))
                 {
-                    messageCount = -1;
+                    messageCount = 500;
                 }
             }
 
@@ -85,7 +85,16 @@ namespace PumpSimulator
             Twin currentTwinProperties = await moduleClient.GetTwinAsync();
             if (currentTwinProperties.Properties.Desired.Contains(SendIntervalConfigKey))
             {
-                messageDelay = TimeSpan.FromSeconds((int)currentTwinProperties.Properties.Desired[SendIntervalConfigKey]);
+                var desiredInterval = (int)currentTwinProperties.Properties.Desired[SendIntervalConfigKey];
+                Console.WriteLine("Updating Send Interval to " + desiredInterval.ToString() + " milliseconds");
+                messageDelay = TimeSpan.FromMilliseconds(desiredInterval);
+            }
+
+            if (currentTwinProperties.Properties.Desired.Contains(EventCountConfigKey))
+            {
+                var desiredCount = (int)currentTwinProperties.Properties.Desired[EventCountConfigKey];
+                Console.WriteLine("Updating Event Count to " + desiredCount.ToString());
+                eventCount = desiredCount;
             }
 
             if (currentTwinProperties.Properties.Desired.Contains(SendDataConfigKey))
@@ -281,11 +290,15 @@ namespace PumpSimulator
             // At this point just update the configure configuration.
             if (desiredPropertiesPatch.Contains(SendIntervalConfigKey))
             {
+                var desiredInterval = (int)desiredPropertiesPatch[SendIntervalConfigKey];
+                Console.WriteLine("Updating Send Interval to " + desiredInterval.ToString());
                 messageDelay = TimeSpan.FromMilliseconds((int)desiredPropertiesPatch[SendIntervalConfigKey]);
             }
 
             if (desiredPropertiesPatch.Contains(EventCountConfigKey))
             {
+                var desiredCount = (int)desiredPropertiesPatch[EventCountConfigKey];
+                Console.WriteLine("Updating Event Count to " + desiredCount.ToString());
                 eventCount = (int)desiredPropertiesPatch[EventCountConfigKey];
             }
 
