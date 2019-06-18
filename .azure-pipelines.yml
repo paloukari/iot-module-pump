@@ -5,29 +5,11 @@ variables:
 - group: iot-module-pump-group
 
 steps:
-- task: CopyFiles@2
-  displayName: 'Copy Modules to: $(Build.ArtifactStagingDirectory)'
-  inputs:
-    SourceFolder: 
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-- task: qetza.replacetokens.replacetokens-task.replacetokens@3
-  displayName: 'Replace Variables - deployment.json'
-  inputs:
-    rootDirectory: 
-    targetFiles: deployment.json
-
-- task: qetza.replacetokens.replacetokens-task.replacetokens@3
-  displayName: 'Replace Variables - module.json'
-  inputs:
-    rootDirectory: 
-    targetFiles: 'modules/**/module.json'
-
 - task: AzureIoTEdge@2
   displayName: 'Azure IoT Edge - Build module images'
   inputs:
     deploymentid: 'azuredevops-deployment'
-    templateFilePath: deployment.json
+    templateFilePath: deployment.template.json
     defaultPlatform: 'windows-amd64'
 
 - task: AzureIoTEdge@2
@@ -37,7 +19,7 @@ steps:
     containerregistrytype: Azure Container Registry
     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
     azureContainerRegistry: $(azureContainerRegistry)
-    templateFilePath: deployment.json
+    templateFilePath: deployment.template.json
     defaultPlatform: windows-amd64 
 
 - task: PublishBuildArtifacts@1
