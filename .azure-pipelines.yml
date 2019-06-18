@@ -30,6 +30,16 @@ steps:
     templateFilePath: deployment.template.json
     defaultPlatform: 'windows-amd64'
 
+- task: AzureIoTEdge@2
+  displayName: 'Azure IoT Edge - Push Module Images'
+  inputs:
+    action: 'Push module images'
+    containerregistrytype: Azure Container Registry
+    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+    azureContainerRegistry: $(azureContainerRegistry)
+    templateFilePath: ado.template.json
+    defaultPlatform: windows-amd64 
+
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
 
