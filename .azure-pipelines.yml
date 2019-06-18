@@ -1,0 +1,33 @@
+pool:
+  name: Hosted Windows 2019 with VS2019
+
+steps:
+- task: CopyFiles@2
+  displayName: 'Copy unaltered source to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '/**/*.*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: qetza.replacetokens.replacetokens-task.replacetokens@3
+  displayName: 'Replace Variables - deployment.json'
+  inputs:
+    rootDirectory: modules
+    targetFiles: deployment.template.json
+
+- task: qetza.replacetokens.replacetokens-task.replacetokens@3
+  displayName: 'Replace Variables - module.json'
+  inputs:
+    rootDirectory: modules
+    targetFiles: '**/module.json'
+
+- task: AzureIoTEdge@2
+  displayName: 'Azure IoT Edge - Build module images'
+  inputs:
+    deploymentid: 'azuredevops-deployment'
+    templateFilePath: modules/deployment.template.json
+    defaultPlatform: 'windows-amd64'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+
