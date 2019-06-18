@@ -8,26 +8,26 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy Modules to: $(Build.ArtifactStagingDirectory)'
   inputs:
-    SourceFolder: modules
+    SourceFolder: 
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: qetza.replacetokens.replacetokens-task.replacetokens@3
   displayName: 'Replace Variables - deployment.json'
   inputs:
-    rootDirectory: modules
-    targetFiles: deployment.template.json
+    rootDirectory: 
+    targetFiles: deployment.json
 
 - task: qetza.replacetokens.replacetokens-task.replacetokens@3
   displayName: 'Replace Variables - module.json'
   inputs:
-    rootDirectory: modules
-    targetFiles: '**/module.json'
+    rootDirectory: 
+    targetFiles: 'modules/**/module.json'
 
 - task: AzureIoTEdge@2
   displayName: 'Azure IoT Edge - Build module images'
   inputs:
     deploymentid: 'azuredevops-deployment'
-    templateFilePath: deployment.template.json
+    templateFilePath: deployment.json
     defaultPlatform: 'windows-amd64'
 
 - task: AzureIoTEdge@2
@@ -37,7 +37,7 @@ steps:
     containerregistrytype: Azure Container Registry
     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
     azureContainerRegistry: $(azureContainerRegistry)
-    templateFilePath: ado.template.json
+    templateFilePath: deployment.json
     defaultPlatform: windows-amd64 
 
 - task: PublishBuildArtifacts@1

@@ -3,7 +3,7 @@
     "$edgeAgent": {
       "properties.desired": {
         "modules": {
-          "pump2": {
+          "pump1": {
             "settings": {
               "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.5",
               "createOptions": {
@@ -26,6 +26,37 @@
               },
               "DEVICE": {
                 "value": "pump1"
+              },
+              "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                "value": "$APPINSIGHTS_INSTRUMENTATIONKEY"
+              }
+            },
+            "status": "running",
+            "restartPolicy": "always"
+          },
+          "pump2": {
+            "settings": {
+              "image": "$CONTAINER_REGISTRY_SERVER/module-pump-win:1.5",
+              "createOptions": {
+                "HostConfig": {
+                  "LogConfig": {
+                    "Type": "json-file",
+                    "Config": {
+                      "max-size": "2m",
+                      "max-file": "3"
+                    }
+                  }
+                }
+              }
+            },
+            "type": "docker",
+            "version": "1.0",
+            "env": {
+              "ASSET": {
+                "value": "$ASSET"
+              },
+              "DEVICE": {
+                "value": "pump2"
               },
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                 "value": "$APPINSIGHTS_INSTRUMENTATIONKEY"
@@ -109,6 +140,11 @@
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
         }
+      }
+    },
+    "pump1": {
+      "properties.desired": {
+        "SendInterval": 10
       }
     },
     "pump2": {
