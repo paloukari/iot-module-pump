@@ -5,6 +5,13 @@ variables:
 - group: iot-module-pump-group
 
 steps:
+- task: CopyFiles@2
+  displayName: 'Copy unaltered source to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '/**/*.*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    
 - task: AzureIoTEdge@2
   displayName: 'Azure IoT Edge - Build module images'
   inputs:
