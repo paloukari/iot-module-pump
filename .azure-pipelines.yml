@@ -8,7 +8,7 @@ steps:
 - task: CopyFiles@2
   displayName: 'Copy unaltered source to: $(Build.ArtifactStagingDirectory)'
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)'
+    SourceFolder: 
     Contents: '/**/*.*'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     
