@@ -1,0 +1,15 @@
+{
+    "$schema-version": "0.0.1",
+    "description": "",
+    "image": {
+        "repository": "#{acr.host}#/module-pump-win",
+        "tag": {
+            "version": "#{Build.DefinitionName}#-#{Build.BuildId}#",
+            "platforms": {
+                "windows-amd64": "./Dockerfile"
+            }
+        },
+        "buildOptions": []
+    },
+    "language": "csharp"
+}

@@ -53,7 +53,7 @@ namespace PumpSimulator
 
             if (!TimeSpan.TryParse(appSettings["MessageDelay"], out messageDelay))
             {
-                messageDelay = TimeSpan.FromSeconds(1);
+                messageDelay = TimeSpan.FromSeconds(1000);
             }
 
             int messageCount;
@@ -83,22 +83,26 @@ namespace PumpSimulator
             (CancellationTokenSource cts, ManualResetEventSlim completed, Option<object> handler) = ShutdownHandler.Init(TimeSpan.FromSeconds(5), null);
 
             Twin currentTwinProperties = await moduleClient.GetTwinAsync();
+            Console.WriteLine("Initialized Twin State Received");
+
+
             if (currentTwinProperties.Properties.Desired.Contains(SendIntervalConfigKey))
             {
+                Console.WriteLine("SendInterval: " + currentTwinProperties.Properties.Desired[SendIntervalConfigKey]);
                 var desiredInterval = (int)currentTwinProperties.Properties.Desired[SendIntervalConfigKey];
-                Console.WriteLine("Updating Send Interval to " + desiredInterval.ToString() + " milliseconds");
                 messageDelay = TimeSpan.FromMilliseconds(desiredInterval);
             }
 
             if (currentTwinProperties.Properties.Desired.Contains(EventCountConfigKey))
             {
+                Console.WriteLine("EventCount: " + currentTwinProperties.Properties.Desired[EventCountConfigKey]);  
                 var desiredCount = (int)currentTwinProperties.Properties.Desired[EventCountConfigKey];
-                Console.WriteLine("Updating Event Count to " + desiredCount.ToString());
                 eventCount = desiredCount;
             }
 
             if (currentTwinProperties.Properties.Desired.Contains(SendDataConfigKey))
             {
+                Console.WriteLine("SendData: " + currentTwinProperties.Properties.Desired[SendDataConfigKey]);  
                 sendData = (bool)currentTwinProperties.Properties.Desired[SendDataConfigKey];
                 if (!sendData)
                 {
@@ -287,6 +291,8 @@ namespace PumpSimulator
 
         static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
         {
+            Console.WriteLine("Device Twin Update Received");
+
             // At this point just update the configure configuration.
             if (desiredPropertiesPatch.Contains(SendIntervalConfigKey))
             {
@@ -307,7 +313,7 @@ namespace PumpSimulator
                 bool desiredSendDataValue = (bool)desiredPropertiesPatch[SendDataConfigKey];
                 if (desiredSendDataValue != sendData && !desiredSendDataValue)
                 {
-                    Console.WriteLine("Sending data disabled. Change twin configuration to start sending again.");
+                    Console.WriteLine("Turning off Send Data. Change twin configuration to start sending again.");
                 }
 
                 sendData = desiredSendDataValue;
