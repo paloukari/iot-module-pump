@@ -3,10 +3,9 @@ pool:
 
 steps:
 - task: CopyFiles@2
-  displayName: 'Copy unaltered source to: $(Build.ArtifactStagingDirectory)'
+  displayName: 'Copy Modules to: $(Build.ArtifactStagingDirectory)'
   inputs:
-    SourceFolder: '$(Build.SourcesDirectory)'
-    Contents: '/**/*.*'
+    SourceFolder: modules
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: qetza.replacetokens.replacetokens-task.replacetokens@3
