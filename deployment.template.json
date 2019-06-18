@@ -3,7 +3,7 @@
     "$edgeAgent": {
       "properties.desired": {
         "modules": {
-          "pump1": {
+          "pump": {
             "settings": {
               "image": "${MODULES.PumpModule}",
               "createOptions": {
@@ -25,7 +25,7 @@
                 "value": "$ASSET"
               },
               "DEVICE": {
-                "value": "pump1"
+                "value": "pump"
               },
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                 "value": "$APPINSIGHTS_INSTRUMENTATIONKEY"
