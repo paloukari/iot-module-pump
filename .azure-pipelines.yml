@@ -1,6 +1,9 @@
 pool:
   name: Hosted Windows 2019 with VS2019
 
+variables:
+- group: iot-module-pump-group
+
 steps:
 - task: CopyFiles@2
   displayName: 'Copy Modules to: $(Build.ArtifactStagingDirectory)'
