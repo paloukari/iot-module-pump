@@ -1,39 +1,52 @@
 {
+  "$schema-template": "1.0.0",
   "modulesContent": {
     "$edgeAgent": {
       "properties.desired": {
         "schemaVersion": "1.0",
         "runtime": {
+          "type": "docker",
           "settings": {
             "minDockerVersion": "v1.25",
+            "loggingOptions": "",
             "privateRegistry": {
               "username": "${ACR_USER}",
               "password": "${ACR_PASS}",
               "address": "${DEVOPS_IOTEDGE_REGISTRY_URL}"
+            },
+            "registryCredentials": {
+              "registry758": {
+                "username": "$CONTAINER_REGISTRY_USERNAME_registry758",
+                "password": "$CONTAINER_REGISTRY_PASSWORD_registry758",
+                "address": "registry758.azurecr.io"
+              }
             }
-          },
-          "type": "docker"
+          }
         },
         "systemModules": {
           "edgeAgent": {
+            "type": "docker",
             "settings": {
               "image": "mcr.microsoft.com/azureiotedge-agent:1.0",
               "createOptions": ""
-            },
-            "type": "docker"
+            }
           },
           "edgeHub": {
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
             "settings": {
               "image": "mcr.microsoft.com/azureiotedge-hub:1.0",
               "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
-            },
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always"
+            }
           }
         },
         "modules": {
-          "pump": {
+          "PumpModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
             "settings": {
               "image": "${MODULES.PumpModule}",
               "createOptions": {
@@ -47,22 +60,7 @@
                   }
                 }
               }
-            },
-            "type": "docker",
-            "version": "1.0",
-            "env": {
-              "ASSET": {
-                "value": "$ASSET"
-              },
-              "DEVICE": {
-                "value": "pump"
-              },
-              "APPINSIGHTS_INSTRUMENTATIONKEY": {
-                "value": "$APPINSIGHTS_INSTRUMENTATIONKEY"
-              }
-            },
-            "status": "running",
-            "restartPolicy": "always"
+            }
           }
         }
       }
@@ -70,7 +68,7 @@
     "$edgeHub": {
       "properties.desired": {
         "routes": {
-          "upstream": "FROM /messages/* INTO $upstream"
+          "PumpModuleToIoTHub": "FROM /messages/modules/PumpModule/outputs/* INTO $upstream"
         },
         "schemaVersion": "1.0",
         "storeAndForwardConfiguration": {

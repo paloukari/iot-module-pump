@@ -2,11 +2,11 @@
     "$schema-version": "0.0.1",
     "description": "",
     "image": {
-        "repository": "${DEVOPS_IOTEDGE_REGISTRY_URL}/module-pump-win",
+        "repository": "registry758.azurecr.io/PumpModule",
         "tag": {
             "version": "0.0.1",
             "platforms": {
-                "windows-amd64": "./Dockerfile"
+                "windows-amd64": "./Dockerfile.windows-amd64"
             }
         },
         "buildOptions": [],
