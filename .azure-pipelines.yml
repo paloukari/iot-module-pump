@@ -19,7 +19,7 @@ steps:
     azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
     azureContainerRegistry: $(azureContainerRegistry)
     defaultPlatform: windows-amd64 
-
+    
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
 
