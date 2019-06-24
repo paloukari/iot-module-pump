@@ -12,14 +12,7 @@
             "privateRegistry": {
               "username": "${ACR_USER}",
               "password": "${ACR_PASS}",
-              "address": "${DEVOPS_IOTEDGE_REGISTRY_URL}"
-            },
-            "registryCredentials": {
-              "registry758": {
-                "username": "$CONTAINER_REGISTRY_USERNAME_registry758",
-                "password": "$CONTAINER_REGISTRY_PASSWORD_registry758",
-                "address": "registry758.azurecr.io"
-              }
+              "address": "${ACR_HOST}"
             }
           }
         },
