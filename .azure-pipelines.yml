@@ -5,6 +5,7 @@ variables:
 - group: iot-module-pump-group
 
 steps:
+   
 - task: AzureIoTEdge@2
   displayName: 'Azure IoT Edge - Build module images'
   inputs:
