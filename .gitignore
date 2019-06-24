@@ -4,6 +4,7 @@
 ## Deployment Manifests
 config/
 .env
+modules_orig/
 
 # User-specific files
 *.suo
