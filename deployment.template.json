@@ -9,11 +9,13 @@
           "settings": {
             "minDockerVersion": "v1.25",
             "loggingOptions": "",
-            "privateRegistry": {
+            "registryCredentials": {
+              "privateRegistry": {
                 "username": "${ACR_USER}",
                 "password": "${ACR_PASSWORD}",
                 "address": "${ACR_HOST}"
               }
+            }
           }
         },
         "systemModules": {
