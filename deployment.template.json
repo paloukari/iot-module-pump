@@ -11,7 +11,7 @@
             "loggingOptions": "",
             "privateRegistry": {
                 "username": "${ACR_USER}",
-                "password": "${ACR_PASS}",
+                "password": "${ACR_PASSWORD}",
                 "address": "${ACR_HOST}"
               }
           }

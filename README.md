@@ -13,11 +13,26 @@ This is a modified simulated pump module to test the ability to deploy a module 
     - Target Framework: _.NET Standard 2.0_
 
 
-### Build and Push the Module to a Registry
+### Build using Azure Pipelines
 
 [![Build Status](https://dascholl.visualstudio.com/IoT/_apis/build/status/danielscholl.iot-module-pump?branchName=master)](https://dascholl.visualstudio.com/IoT/_build/latest?definitionId=38&branchName=master)
 
-The module needs to be built on Windows System running Windows Containers.
+The DevOps Pipeline requires a Variable Group to be used as well as a Service Connection Endpoint
+
+```
+Required Variables
+----------------------------------
+ACR_HOST: The FQDN of the Registry
+ACR_USER: A login user name of the Registry
+ACR_PASSWORD: The password for the login user name of the Registry
+ACR_REGISTRY: JSON Snipit for the Registry
+    {"loginServer":"{registryName}.azurecr.io", "id" : "/subscriptions/{azureSubscription}/resourceGroups/{resourceGroupName/providers/Microsoft.ContainerRegistry/registries/{registryName"}
+SERVICE_ENDPOINT: ServiceEndpoint Connection Name
+```
+
+### Manual Build and Push the Module to a Registry
+
+The module can be manually built within the Azure Container Registry itself.
 
 ```bash
 # Login to the Registry
@@ -34,33 +49,19 @@ az acr run --registry <registry_name> --platform windows --file build.yaml .
 Update the .env settings file with the proper values
 
 ```
-# CONNECTION STRINGS
-IOTHUB_CONNECTION_STRING=""
-
 # CONTAINER REGISTRY
-CONTAINER_REGISTRY_SERVER=""
-CONTAINER_REGISTRY_USERNAME=""
-CONTAINER_REGISTRY_PASSWORD="
+ACR_USER=''
+ACR_PASSWORD=''
+ACR_HOST=''
 ```
 
 Configure the Deployment Template using VS Code
 
 ### Deploy the Module to the Edge Device
 
-> Modify the module image name in the manifest file as necessary based on the __registry__ used.
+Create the Manifest File
 
-```json
-"SimulatedPump": {
-    "settings": {
-        "image": "<your_registry>/module-pump-win:latest",
-        "createOptions": ""
-    },
-    "type": "docker",
-    "status": "running",
-    "restartPolicy": "always",
-    "version": "1.0"
-}
-```
+> Note:  The module.json file has variables to automatically parse Image Id's ensure the proper Image Id is in the manifest.
 
 ```powershell
 $Device = "<your_edge_device>"
@@ -71,7 +72,7 @@ $Hub = "<your_hub>"
 az iot edge set-modules `
     --device-id $Device `
     --hub-name $Hub `
-    --content manifest.json
+    --content config/deployment.windows-amd64.json.json
 ```
 
 To utilize docker client on the windows server the docker host must be set properly for Moby.

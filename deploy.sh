@@ -24,4 +24,4 @@ echo "Deploying modules to ${EDGE_VM}"
 az iot edge set-modules \
   --device-id ${EDGE_VM} \
   --hub-name ${IOT_HUB} \
-  --content config/deployment.json
+  --content config/deployment.windows-amd64.json
