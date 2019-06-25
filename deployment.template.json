@@ -44,6 +44,11 @@
             "restartPolicy": "always",
             "settings": {
               "image": "${MODULES.PumpModule}",
+              "env": {
+                "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                    "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+                }
+              },
               "createOptions": {
                 "HostConfig": {
                   "LogConfig": {
