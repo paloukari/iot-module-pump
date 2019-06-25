@@ -2,7 +2,7 @@
     "$schema-version": "0.0.1",
     "description": "",
     "image": {
-        "repository": "${ACR_HOST}/PumpModule",
+        "repository": "${ACR_HOST}/pumpmodule",
         "tag": {
             "version": "0.0.#{Build.BuildId}#",
             "platforms": {
