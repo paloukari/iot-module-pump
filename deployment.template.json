@@ -68,7 +68,7 @@
     "$edgeHub": {
       "properties.desired": {
         "routes": {
-          "PumpModuleToIoTHub": "FROM /messages/modules/PumpModule/outputs/* INTO $upstream"
+          "PumpToIoTHub": "FROM /messages/modules/pump/outputs/* INTO $upstream"
         },
         "schemaVersion": "1.0",
         "storeAndForwardConfiguration": {
