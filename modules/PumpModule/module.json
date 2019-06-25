@@ -2,9 +2,9 @@
     "$schema-version": "0.0.1",
     "description": "",
     "image": {
-        "repository": "registry758.azurecr.io/PumpModule",
+        "repository": "${ACR_HOST}/PumpModule",
         "tag": {
-            "version": "0.0.1",
+            "version": "#{Build.DefinitionName}#-#{Build.BuildId}#",
             "platforms": {
                 "windows-amd64": "./Dockerfile.windows-amd64"
             }

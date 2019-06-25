@@ -1,3 +1,11 @@
+# Required Variables
+# ACR_HOST:  myregistry.azurecr.io
+# ACR_USER:  registryUser
+# ACR_PASSWORD: registryPassword
+# ACR_REGISTRY: {"loginServer":"{registryName}.azurecr.io", "id" : "/subscriptions/{azureSubscription}/resourceGroups/{resourceGroupName/providers/Microsoft.ContainerRegistry/registries/{registryName"}
+# SERVICE_ENDPOINT: myService
+
+
 pool:
   name: Hosted Windows 2019 with VS2019
 
@@ -5,6 +13,12 @@ variables:
 - group: iot-module-pump-group
 
 steps:
+
+- task: qetza.replacetokens.replacetokens-task.replacetokens@3
+  displayName: 'Replace tokens in modules/**/module.json'
+  inputs:
+    rootDirectory: 
+    targetFiles: 'modules/**/module.json'
    
 - task: AzureIoTEdge@2
   displayName: 'Azure IoT Edge - Build module images'
@@ -16,8 +30,8 @@ steps:
   inputs:
     action: 'Push module images'
     containerregistrytype: Azure Container Registry
-    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
-    azureContainerRegistry: $(azureContainerRegistry)
+    azureSubscriptionEndpoint: $(SERVICE_ENDPOINT)
+    azureContainerRegistry: $(ACR_REGISTRY)
     defaultPlatform: windows-amd64 
     
 - task: PublishBuildArtifacts@1

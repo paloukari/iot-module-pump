@@ -2,6 +2,7 @@
 
 This is a modified simulated pump module to test the ability to deploy a module to an IoTEdge Windows OS with the module compiled using the dotnet framework instead of dotnet core.
 
+
 - Console Application:  __SimulatedTemperatureSensor__
     - Target Framework: _.NET Framework 4.7.2_
 
@@ -14,6 +15,8 @@ This is a modified simulated pump module to test the ability to deploy a module 
 
 ### Build and Push the Module to a Registry
 
+[![Build Status](https://dascholl.visualstudio.com/IoT/_apis/build/status/danielscholl.iot-module-pump?branchName=master)](https://dascholl.visualstudio.com/IoT/_build/latest?definitionId=38&branchName=master)
+
 The module needs to be built on Windows System running Windows Containers.
 
 ```bash
@@ -21,7 +24,6 @@ The module needs to be built on Windows System running Windows Containers.
 az acr login --name <registry_name>
 
 # Build the module with ACR
-cd modules
 az acr run --registry <registry_name> --platform windows --file build.yaml .
 ```
 
