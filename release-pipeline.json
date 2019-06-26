@@ -1,0 +1,231 @@
+{
+  "source": 2,
+  "revision": 13,
+  "description": null,
+  "createdBy": {
+      "displayName": "Daniel Scholl",
+      "url": "https://spsprodcus1.vssps.visualstudio.com/A1e113c6c-068d-446c-939a-7557dbd402e8/_apis/Identities/20501658-c92a-621b-9363-453c08f06c14",
+      "_links": {
+          "avatar": {
+              "href": "https://dascholl.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0"
+          }
+      },
+      "id": "20501658-c92a-621b-9363-453c08f06c14",
+      "uniqueName": "dascholl@microsoft.com",
+      "imageUrl": "https://dascholl.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0",
+      "descriptor": "aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0"
+  },
+  "createdOn": "2019-06-25T14:52:38.953Z",
+  "modifiedBy": {
+      "displayName": "Daniel Scholl",
+      "url": "https://spsprodcus1.vssps.visualstudio.com/A1e113c6c-068d-446c-939a-7557dbd402e8/_apis/Identities/20501658-c92a-621b-9363-453c08f06c14",
+      "_links": {
+          "avatar": {
+              "href": "https://dascholl.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0"
+          }
+      },
+      "id": "20501658-c92a-621b-9363-453c08f06c14",
+      "uniqueName": "dascholl@microsoft.com",
+      "imageUrl": "https://dascholl.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0",
+      "descriptor": "aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0"
+  },
+  "modifiedOn": "2019-06-25T21:47:47.200Z",
+  "isDeleted": false,
+  "variables": {
+      "DEPLOYMENT_NAME": {
+          "value": "iot-module-pump"
+      },
+      "HUB_NAME": {
+          "value": "<HubName>"
+      },
+      "SERVICE_ENDPOINT": {
+          "value": "<SubscriptionID>"
+      },
+      "ACR_REGISTRY": {
+          "value": "<RegistryJSON>"
+      }
+  },
+  "variableGroups": [],
+  "environments": [{
+      "id": 2,
+      "name": "Deploy Manifest",
+      "rank": 1,
+      "owner": {
+          "displayName": "Daniel Scholl",
+          "url": "https://spsprodcus1.vssps.visualstudio.com/A1e113c6c-068d-446c-939a-7557dbd402e8/_apis/Identities/20501658-c92a-621b-9363-453c08f06c14",
+          "_links": {
+              "avatar": {
+                  "href": "https://dascholl.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0"
+              }
+          },
+          "id": "20501658-c92a-621b-9363-453c08f06c14",
+          "uniqueName": "dascholl@microsoft.com",
+          "imageUrl": "https://dascholl.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0",
+          "descriptor": "aad.MjA1MDE2NTgtYzkyYS03MjFiLTkzNjMtNDUzYzA4ZjA2YzE0"
+      },
+      "variables": {},
+      "variableGroups": [],
+      "preDeployApprovals": {
+          "approvals": [{
+              "rank": 1,
+              "isAutomated": true,
+              "isNotificationOn": false,
+              "id": 4
+          }],
+          "approvalOptions": {
+              "requiredApproverCount": null,
+              "releaseCreatorCanBeApprover": true,
+              "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+              "enforceIdentityRevalidation": false,
+              "timeoutInMinutes": 0,
+              "executionOrder": 1
+          }
+      },
+      "deployStep": {
+          "id": 7
+      },
+      "postDeployApprovals": {
+          "approvals": [{
+              "rank": 1,
+              "isAutomated": true,
+              "isNotificationOn": false,
+              "id": 8
+          }],
+          "approvalOptions": {
+              "requiredApproverCount": null,
+              "releaseCreatorCanBeApprover": true,
+              "autoTriggeredAndPreviousEnvironmentApprovedCanBeSkipped": false,
+              "enforceIdentityRevalidation": false,
+              "timeoutInMinutes": 0,
+              "executionOrder": 2
+          }
+      },
+      "deployPhases": [{
+          "deploymentInput": {
+              "parallelExecution": {
+                  "parallelExecutionType": 0
+              },
+              "agentSpecification": null,
+              "skipArtifactsDownload": false,
+              "artifactsDownloadInput": { "downloadInputs": [] },
+              "queueId": 65,
+              "demands": [],
+              "enableAccessToken": false,
+              "timeoutInMinutes": 0,
+              "jobCancelTimeoutInMinutes": 1,
+              "condition": "succeeded()",
+              "overrideInputs": {}
+          },
+          "rank": 1,
+          "phaseType": 1,
+          "name": "Agent job",
+          "refName": null,
+          "workflowTasks": [{
+              "environment": {},
+              "taskId": "80f3f6a0-82a6-4a22-ba7a-e5b8c541b9b8",
+              "version": "2.*",
+              "name": "Azure IoT Edge - Deploy to IoT Edge devices",
+              "refName": "",
+              "enabled": true,
+              "alwaysRun": false,
+              "continueOnError": false,
+              "timeoutInMinutes": 0,
+              "definitionType": "task",
+              "overrideInputs": {},
+              "condition": "succeeded()",
+              "inputs": {
+                  "action": "Deploy to IoT Edge devices",
+                  "deploymentFilePath": "$(System.DefaultWorkingDirectory)/**/deployment.windows-amd64.json",
+                  "connectedServiceNameARM": "",
+                  "iothubname": "$(HUB_NAME)",
+                  "deploymentid": "$(DEPLOYMENT_NAME)",
+                  "priority": "0",
+                  "deviceOption": "Multiple Devices",
+                  "deviceId": "",
+                  "targetcondition": "tags.deploy=true",
+                  "containerregistrytype": "Azure Container Registry",
+                  "dockerRegistryEndpoint": "",
+                  "azureSubscriptionEndpoint": "$(SERVICE_ENDPOINT)",
+                  "azureContainerRegistry": "$(ACR_REGISTRY)",
+                  "templateFilePath": "deployment.template.json",
+                  "defaultPlatform": "amd64-windows",
+                  "fillRegistryCredential": "true",
+                  "deploymentManifestOutputPath": "$(System.DefaultWorkingDirectory)/config/deployment.json",
+                  "bypassModules": ""
+              }
+          }]
+      }],
+      "environmentOptions": {
+          "emailNotificationType": "OnlyOnFailure",
+          "emailRecipients": "release.environment.owner;release.creator",
+          "skipArtifactsDownload": false,
+          "timeoutInMinutes": 0,
+          "enableAccessToken": false,
+          "publishDeploymentStatus": true,
+          "badgeEnabled": false,
+          "autoLinkWorkItems": false,
+          "pullRequestDeploymentEnabled": false
+      },
+      "demands": [],
+      "conditions": [{
+          "name": "ReleaseStarted",
+          "conditionType": 1,
+          "value": ""
+      }],
+      "executionPolicy": {
+          "concurrencyCount": 1,
+          "queueDepthCount": 0
+      },
+      "schedules": [],
+      "currentRelease": {
+          "id": 8,
+          "url": "https://dascholl.vsrm.visualstudio.com/de9a8b89-7b05-4785-9378-0f145d090b82/_apis/Release/releases/8",
+          "_links": {}
+      },
+      "retentionPolicy": {
+          "daysToKeep": 30,
+          "releasesToKeep": 3,
+          "retainBuild": true
+      },
+      "processParameters": {},
+      "properties": {},
+      "preDeploymentGates": {
+          "id": 0,
+          "gatesOptions": null,
+          "gates": []
+      },
+      "postDeploymentGates": {
+          "id": 0,
+          "gatesOptions": null,
+          "gates": []
+      },
+      "environmentTriggers": [],
+      "badgeUrl": "https://dascholl.vsrm.visualstudio.com/_apis/public/Release/badge/de9a8b89-7b05-4785-9378-0f145d090b82/2/2"
+  }],
+  "artifacts": [],
+  "triggers": [],
+  "releaseNameFormat": "Release-$(rev:r)",
+  "tags": [],
+  "pipelineProcess": {
+      "type": 1
+  },
+  "properties": {
+      "DefinitionCreationSource": {
+          "$type": "System.String",
+          "$value": "ReleaseImport"
+      }
+  },
+  "id": 2,
+  "name": "iot-module-pump",
+  "path": "\\",
+  "projectReference": null,
+  "url": "https://dascholl.vsrm.visualstudio.com/de9a8b89-7b05-4785-9378-0f145d090b82/_apis/Release/definitions/2",
+  "_links": {
+      "self": {
+          "href": "https://dascholl.vsrm.visualstudio.com/de9a8b89-7b05-4785-9378-0f145d090b82/_apis/Release/definitions/2"
+      },
+      "web": {
+          "href": "https://dascholl.visualstudio.com/de9a8b89-7b05-4785-9378-0f145d090b82/_release?definitionId=2"
+      }
+  }
+}
