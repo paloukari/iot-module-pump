@@ -87,14 +87,63 @@
               }
             }
           }
+        },
+        "pump3": {
+          "version": "1.0",
+          "type": "docker",
+          "status": "running",
+          "restartPolicy": "always",
+          "settings": {
+            "image": "${MODULES.PumpModule}",
+            "createOptions": {
+              "HostConfig": {
+                "LogConfig": {
+                  "Type": "json-file",
+                  "Config": {
+                    "max-size": "2m",
+                    "max-file": "3"
+                  }
+                }
+              }
+            }
+          },
+          "env": {
+            "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+            }
+          }
+        },
+        "pump4": {
+          "version": "1.0",
+          "type": "docker",
+          "status": "running",
+          "restartPolicy": "always",
+          "settings": {
+            "image": "${MODULES.PumpModule}",
+            "createOptions": {
+              "HostConfig": {
+                "LogConfig": {
+                  "Type": "json-file",
+                  "Config": {
+                    "max-size": "2m",
+                    "max-file": "3"
+                  }
+                }
+              }
+            }
+          },
+          "env": {
+            "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+            }
+          }
         }
       }
     },
     "$edgeHub": {
       "properties.desired": {
         "routes": {
-          "PumpToIoTHub": "FROM /messages/modules/pump/outputs/* INTO $upstream",
-          "Pump2ToIoTHub": "FROM /messages/modules/pump2/outputs/* INTO $upstream"
+          "PumpToIoTHub": "FROM /messages/modules/* INTO $upstream"
         },
         "schemaVersion": "1.0",
         "storeAndForwardConfiguration": {
@@ -104,12 +153,22 @@
     },
     "pump": {
       "properties.desired": {
-        "SendInterval": 10
+        "SendInterval": 1000
       }
     },
     "pump2": {
       "properties.desired": {
-        "SendInterval": 10
+        "SendInterval": 1000
+      }
+    },
+    "pump3": {
+      "properties.desired": {
+        "SendInterval": 1000
+      }
+    },
+    "pump4": {
+      "properties.desired": {
+        "SendInterval": 1000
       }
     }
   }
