@@ -86,55 +86,55 @@
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
               }
             }
-          }
-        },
-        "pump3": {
-          "version": "1.0",
-          "type": "docker",
-          "status": "running",
-          "restartPolicy": "always",
-          "settings": {
-            "image": "${MODULES.PumpModule}",
-            "createOptions": {
-              "HostConfig": {
-                "LogConfig": {
-                  "Type": "json-file",
-                  "Config": {
-                    "max-size": "2m",
-                    "max-file": "3"
+          },
+          "pump3": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.PumpModule}",
+              "createOptions": {
+                "HostConfig": {
+                  "LogConfig": {
+                    "Type": "json-file",
+                    "Config": {
+                      "max-size": "2m",
+                      "max-file": "3"
+                    }
                   }
                 }
               }
-            }
-          },
-          "env": {
-            "APPINSIGHTS_INSTRUMENTATIONKEY": {
-                "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
-            }
-          }
-        },
-        "pump4": {
-          "version": "1.0",
-          "type": "docker",
-          "status": "running",
-          "restartPolicy": "always",
-          "settings": {
-            "image": "${MODULES.PumpModule}",
-            "createOptions": {
-              "HostConfig": {
-                "LogConfig": {
-                  "Type": "json-file",
-                  "Config": {
-                    "max-size": "2m",
-                    "max-file": "3"
-                  }
-                }
+            },
+            "env": {
+              "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                  "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
               }
             }
           },
-          "env": {
-            "APPINSIGHTS_INSTRUMENTATIONKEY": {
-                "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+          "pump4": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.PumpModule}",
+              "createOptions": {
+                "HostConfig": {
+                  "LogConfig": {
+                    "Type": "json-file",
+                    "Config": {
+                      "max-size": "2m",
+                      "max-file": "3"
+                    }
+                  }
+                }
+              }
+            },
+            "env": {
+              "APPINSIGHTS_INSTRUMENTATIONKEY": {
+                  "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+              }
             }
           }
         }
