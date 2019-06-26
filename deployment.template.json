@@ -144,9 +144,9 @@
       "properties.desired": {
         "routes": {
           "PumpToIoTHub": "FROM /messages/modules/pump/outputs/* INTO $upstream",
-          "Pump2ToIoTHub": "FROM /messages/modules/pump1/outputs/* INTO $upstream",
-          "Pump3ToIoTHub": "FROM /messages/modules/pump2/outputs/* INTO $upstream",
-          "Pump4ToIoTHub": "FROM /messages/modules/pump3/outputs/* INTO $upstream"
+          "Pump2ToIoTHub": "FROM /messages/modules/pump2/outputs/* INTO $upstream",
+          "Pump3ToIoTHub": "FROM /messages/modules/pump3/outputs/* INTO $upstream",
+          "Pump4ToIoTHub": "FROM /messages/modules/pump4/outputs/* INTO $upstream"
         },
         "schemaVersion": "1.0",
         "storeAndForwardConfiguration": {
