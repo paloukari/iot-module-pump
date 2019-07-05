@@ -37,7 +37,7 @@
           }
         },
         "modules": {
-          "pump": {
+          "pump1": {
             "version": "1.0",
             "type": "docker",
             "status": "running",
@@ -59,6 +59,9 @@
             "env": {
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+              },
+              "DEVICE": {
+                "value": "pump1"
               }
             }
           },
@@ -84,6 +87,9 @@
             "env": {
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+              },
+              "DEVICE": {
+                "value": "pump2"
               }
             }
           },
@@ -109,6 +115,9 @@
             "env": {
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+              },
+              "DEVICE": {
+                "value": "pump3"
               }
             }
           },
@@ -134,6 +143,9 @@
             "env": {
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+              },
+              "DEVICE": {
+                "value": "pump4"
               }
             }
           }
@@ -143,7 +155,7 @@
     "$edgeHub": {
       "properties.desired": {
         "routes": {
-          "PumpToIoTHub": "FROM /messages/modules/pump/outputs/* INTO $upstream",
+          "Pump1ToIoTHub": "FROM /messages/modules/pump1/outputs/* INTO $upstream",
           "Pump2ToIoTHub": "FROM /messages/modules/pump2/outputs/* INTO $upstream",
           "Pump3ToIoTHub": "FROM /messages/modules/pump3/outputs/* INTO $upstream",
           "Pump4ToIoTHub": "FROM /messages/modules/pump4/outputs/* INTO $upstream"
@@ -154,24 +166,32 @@
         }
       }
     },
-    "pump": {
+    "pump1": {
       "properties.desired": {
-        "SendInterval": 1000
+        "SendInterval": 1000,
+        "SendData": true,
+        "EventCount": 1
       }
     },
     "pump2": {
       "properties.desired": {
-        "SendInterval": 1000
+        "SendInterval": 1000,
+        "SendData": true,
+        "EventCount": 1
       }
     },
     "pump3": {
       "properties.desired": {
-        "SendInterval": 1000
+        "SendInterval": 1000,
+        "SendData": true,
+        "EventCount": 1
       }
     },
     "pump4": {
       "properties.desired": {
-        "SendInterval": 1000
+        "SendInterval": 1000,
+        "SendData": true,
+        "EventCount": 1
       }
     }
   }

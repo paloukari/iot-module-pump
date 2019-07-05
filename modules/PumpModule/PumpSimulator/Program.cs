@@ -165,7 +165,7 @@ namespace PumpSimulator
                 if (sendData)
                 {
                     var events = new List<MessageEvent>();
-                    var deviceId = Environment.GetEnvironmentVariable("DEVICE") ?? Environment.MachineName;
+                    var deviceId = Environment.MachineName + "-" + Environment.GetEnvironmentVariable("DEVICE");
 
                     // Add Desired Number of Events into the Message
                     for (int i = 0; i < eventCount; i++)
