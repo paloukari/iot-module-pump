@@ -73,18 +73,30 @@ namespace PumpSimulator
                 + $"messages, at an interval of {messageDelay.TotalSeconds} seconds.\n"
                 + $"To change this, set the environment variable {MessageCountConfigKey} to the number of messages that should be sent (set it to -1 to send unlimited messages).");
 
-            ModuleClient moduleClient = await ModuleUtil.CreateModuleClientAsync(
-               TransportType.Amqp_Tcp_Only,
-               ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
-               ModuleUtil.DefaultTransientRetryStrategy);
-            await moduleClient.OpenAsync();
-            await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
+            ModuleClient moduleClient;
+
+            try
+            {
+                moduleClient = await ModuleUtil.CreateModuleClientAsync(
+                    TransportType.Amqp_Tcp_Only,
+                    ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
+                    ModuleUtil.DefaultTransientRetryStrategy);
+                await moduleClient.OpenAsync();
+                await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
+            }
+            catch (System.Exception ex)
+            {
+                var deviceId = Environment.MachineName + "-" + Environment.GetEnvironmentVariable("DEVICE");
+                
+                if (insights) telemetryClient.TrackTrace(String.Format("Error for device {0} while establishing connection: {1}", deviceId, ex.Message));
+                if (insights) telemetryClient.GetMetric("DeviceSendError").TrackValue(1);
+                throw ex;
+            }
 
             (CancellationTokenSource cts, ManualResetEventSlim completed, Option<object> handler) = ShutdownHandler.Init(TimeSpan.FromSeconds(5), null);
 
             Twin currentTwinProperties = await moduleClient.GetTwinAsync();
             Console.WriteLine("Initialized Twin State Received");
-
 
             if (currentTwinProperties.Properties.Desired.Contains(SendIntervalConfigKey))
             {
