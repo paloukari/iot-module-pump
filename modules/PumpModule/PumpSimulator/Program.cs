@@ -31,6 +31,7 @@ namespace PumpSimulator
 
         static TelemetryClient telemetryClient;
         static bool insights = false;
+        static bool debug = false;
 
         public static int Main() => MainAsync().Result;
 
@@ -50,6 +51,16 @@ namespace PumpSimulator
                     telemetryClient.Context.Device.Id = Environment.MachineName;
                     telemetryClient.TrackEvent("Simulator started");
                     telemetryClient.GetMetric("PumpCount").TrackValue(1);  
+                }
+
+                // Setup Debug
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("LOG_LEVEL")))
+                {
+                    if(Environment.GetEnvironmentVariable("LOG_LEVEL") == "debug") 
+                    {
+                        Console.WriteLine("Debug Turned On.");
+                        debug = true;
+                    }
                 }
 
 
@@ -124,7 +135,7 @@ namespace PumpSimulator
                 Console.WriteLine("SimulatedTemperatureSensor Main() finished.");
                 return 0;
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
                 var deviceId = Environment.MachineName + "-" + Environment.GetEnvironmentVariable("DEVICE");
                 Console.WriteLine("PumpSimulator Main() error.");
@@ -235,7 +246,9 @@ namespace PumpSimulator
                     eventMessage.Properties.Add("batchId", BatchId.ToString());
                     eventMessage.Properties.Add("asset", msgBody.Asset);
                     var size = eventMessage.GetBytes().Length;
-                    Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}, Body: [{dataBuffer}]");
+
+                    if(debug) Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}, Body: [{dataBuffer}]");
+                    else Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}");
 
                     await moduleClient.SendEventAsync("temperatureOutput", eventMessage);
                     if (insights) telemetryClient.GetMetric("SendMessage").TrackValue(1);

@@ -60,6 +60,9 @@
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
               },
+              "LOG_LEVEL": {
+                "value": "debug"
+              },
               "DEVICE": {
                 "value": "pump1"
               }
@@ -87,6 +90,9 @@
             "env": {
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+              },
+              "LOG_LEVEL": {
+                "value": "debug"
               },
               "DEVICE": {
                 "value": "pump2"
@@ -116,6 +122,9 @@
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
               },
+              "LOG_LEVEL": {
+                "value": "debug"
+              },
               "DEVICE": {
                 "value": "pump3"
               }
@@ -143,6 +152,9 @@
             "env": {
               "APPINSIGHTS_INSTRUMENTATIONKEY": {
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
+              },
+              "LOG_LEVEL": {
+                "value": "debug"
               },
               "DEVICE": {
                 "value": "pump4"
