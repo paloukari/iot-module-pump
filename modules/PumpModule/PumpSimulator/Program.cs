@@ -251,6 +251,13 @@ namespace PumpSimulator
                     else Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}");
 
                     await moduleClient.SendEventAsync("temperatureOutput", eventMessage);
+                    if (insights)
+                    {
+                        telemetryClient.GetMetric("SendMessage").TrackValue(1);
+                        telemetryClient.Context.Operation.Name = "Special Operation";
+                        Metric sizeStats = telemetryClient.GetMetric("Special Operation Message Size");
+                        sizeStats.TrackValue(size);
+                    }
                     if (insights) telemetryClient.GetMetric("SendMessage").TrackValue(1);
                     count++;
                 }
