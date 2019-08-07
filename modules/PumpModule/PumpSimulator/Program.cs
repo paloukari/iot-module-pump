@@ -258,7 +258,6 @@ namespace PumpSimulator
                         Metric sizeStats = telemetryClient.GetMetric("Special Operation Message Size");
                         sizeStats.TrackValue(size);
                     }
-                    if (insights) telemetryClient.GetMetric("SendMessage").TrackValue(1);
                     count++;
                 }
 

@@ -2,8 +2,9 @@
 # ACR_HOST:  myregistry.azurecr.io
 # ACR_USER:  registryUser
 # ACR_PASSWORD: registryPassword
-# ACR_REGISTRY: {"loginServer":"{registryName}.azurecr.io", "id" : "/subscriptions/{azureSubscription}/resourceGroups/{resourceGroupName/providers/Microsoft.ContainerRegistry/registries/{registryName"}
+# ACR_REGISTRY: {"loginServer":"{REGISTRY_NAME}.azurecr.io", "id" : "/subscriptions/{azureSubscription}/resourceGroups/{RESOURCE_GROUP}/providers/Microsoft.ContainerRegistry/registries/{registryName"}
 # SERVICE_ENDPOINT: myService
+# 
 
 
 pool:
