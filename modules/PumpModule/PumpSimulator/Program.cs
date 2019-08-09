@@ -139,6 +139,7 @@ namespace PumpSimulator
             {
                 var deviceId = Environment.MachineName + "-" + Environment.GetEnvironmentVariable("DEVICE");
                 Console.WriteLine("PumpSimulator Main() error.");
+                Console.WriteLine(ex.Message);
                 
                 if (insights) telemetryClient.TrackTrace(String.Format("Error for device {0} while establishing connection: {1}", deviceId, ex.Message));
                 if (insights) telemetryClient.GetMetric("DeviceSendError").TrackValue(1);
