@@ -1,4 +1,5 @@
 ﻿using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Edge.ModuleUtil;
 using Microsoft.Azure.Devices.Edge.Util;
@@ -8,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -140,9 +142,33 @@ namespace PumpSimulator
                 var deviceId = Environment.MachineName + "-" + Environment.GetEnvironmentVariable("DEVICE");
                 Console.WriteLine("PumpSimulator Main() error.");
                 Console.WriteLine(ex.Message);
+
+                var jsonSettings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+
+                if (insights) {
+                    var telemetry = new ExceptionTelemetry(ex);
+                    Type exceptionType = ex.GetType();
+                    if (exceptionType != null)
+                    {
+                        foreach (PropertyInfo property in exceptionType.GetProperties())
+                        {
+                            if (string.Equals(property.Name, "StackTrace") ||
+                                string.Equals(property.Name, "Message") ||
+                                string.Equals(property.Name, "TargetSite"))
+                            {
+                                // skip duplicate data
+                            }
+                            else
+                            {
+                                telemetry.Properties[$"{exceptionType.Name}.{property.Name}"] 
+                                    = JsonConvert.SerializeObject(property.GetValue(ex), jsonSettings);
+                            }
+                        }
+                    }
+
+                    telemetryClient.TrackException(telemetry);
+                }
                 
-                if (insights) telemetryClient.TrackTrace(String.Format("Error for device {0} while establishing connection: {1}", deviceId, ex.Message));
-                if (insights) telemetryClient.GetMetric("DeviceSendError").TrackValue(1);
                 return -1;
             }
             
