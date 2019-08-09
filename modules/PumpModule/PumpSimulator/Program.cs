@@ -140,28 +140,6 @@ namespace PumpSimulator
             catch (System.Exception ex)
             {
                 Console.WriteLine("PumpSimulator Main() error.");
-
-                var telemetry = new ExceptionTelemetry(ex);
-                Type exceptionType = ex.GetType();
-                if (exceptionType != null)
-                {
-                    foreach (PropertyInfo property in exceptionType.GetProperties())
-                    {
-                        if (string.Equals(property.Name, "StackTrace") ||
-                            string.Equals(property.Name, "Message") ||
-                            string.Equals(property.Name, "TargetSite"))
-                        {
-                            // skip duplicate data
-                        }
-                        else
-                        {
-                            telemetry.Properties[$"{exceptionType.Name}.{property.Name}"] 
-                                = JsonConvert.SerializeObject(property.GetValue(ex), new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-                        }
-                    }
-                }
-                telemetryClient.TrackException(telemetry);
-
                 Console.WriteLine(ex.Message);
 
                 return -1;
@@ -272,14 +250,43 @@ namespace PumpSimulator
                     if(debug) Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}, Body: [{dataBuffer}]");
                     else Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}");
 
-                    await moduleClient.SendEventAsync("temperatureOutput", eventMessage);
-                    if (insights)
+                    try
                     {
-                        telemetryClient.GetMetric("SendMessage").TrackValue(1);
-                        telemetryClient.Context.Operation.Name = "Special Operation";
-                        Metric sizeStats = telemetryClient.GetMetric("Special Operation Message Size");
-                        sizeStats.TrackValue(size);
+                        await moduleClient.SendEventAsync("temperatureOutput", eventMessage);
+                        if (insights)
+                        {
+                            telemetryClient.GetMetric("SendMessage").TrackValue(1);
+                            telemetryClient.Context.Operation.Name = "Special Operation";
+                            Metric sizeStats = telemetryClient.GetMetric("Special Operation Message Size");
+                            sizeStats.TrackValue(size);
+                        }
                     }
+                    catch (System.Exception exception)
+                    {
+                        Console.WriteLine("Client SendEventAsync() error.");
+                        Console.WriteLine(exception.Message);
+                        
+                        var telemetry = new ExceptionTelemetry(exception);
+                        Type exceptionType = exception.GetType();
+                        if (exceptionType != null)
+                        {
+                            foreach (PropertyInfo property in exceptionType.GetProperties())
+                            {
+                                if (string.Equals(property.Name, "StackTrace") ||
+                                    string.Equals(property.Name, "Message") ||
+                                    string.Equals(property.Name, "TargetSite"))
+                                {
+                                    // skip duplicate data
+                                }
+                                else
+                                {
+                                    telemetry.Properties[$"{exceptionType.Name}.{property.Name}"] 
+                                        = JsonConvert.SerializeObject(property.GetValue(exception), new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                                }
+                            }
+                        }
+                        telemetryClient.TrackException(telemetry);
+                    }                    
                     count++;
                 }
 
