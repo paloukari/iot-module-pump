@@ -264,28 +264,17 @@ namespace PumpSimulator
                     catch (System.Exception exception)
                     {
                         Console.WriteLine("Client SendEventAsync() error.");
-                        Console.WriteLine(exception.Message);
                         
-                        var telemetry = new ExceptionTelemetry(exception);
                         Type exceptionType = exception.GetType();
                         if (exceptionType != null)
                         {
-                            foreach (PropertyInfo property in exceptionType.GetProperties())
+                            Console.WriteLine(exception.GetType().ToString());
+                            Console.WriteLine(exception.Message);
+                            if (insights)
                             {
-                                if (string.Equals(property.Name, "StackTrace") ||
-                                    string.Equals(property.Name, "Message") ||
-                                    string.Equals(property.Name, "TargetSite"))
-                                {
-                                    // skip duplicate data
-                                }
-                                else
-                                {
-                                    telemetry.Properties[$"{exceptionType.Name}.{property.Name}"] 
-                                        = JsonConvert.SerializeObject(property.GetValue(exception), new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-                                }
+                                telemetryClient.GetMetric("MessageSizeExceeded").TrackValue(1);
                             }
                         }
-                        telemetryClient.TrackException(telemetry);
                     }                    
                     count++;
                 }
