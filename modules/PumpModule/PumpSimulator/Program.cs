@@ -252,7 +252,6 @@ namespace PumpSimulator
 
                     try
                     {
-                        await moduleClient.SendEventAsync("temperatureOutput", eventMessage);
                         if (insights)
                         {
                             telemetryClient.GetMetric("SendMessage").TrackValue(1);
@@ -260,20 +259,14 @@ namespace PumpSimulator
                             Metric sizeStats = telemetryClient.GetMetric("Special Operation Message Size");
                             sizeStats.TrackValue(size);
                         }
+                        await moduleClient.SendEventAsync("temperatureOutput", eventMessage);  
                     }
-                    catch (System.Exception exception)
+                    catch (Microsoft.Azure.Devices.Client.Exceptions.MessageTooLargeException exception)
                     {
-                        Console.WriteLine("Client SendEventAsync() error.");
-                        
-                        Type exceptionType = exception.GetType();
-                        if (exceptionType != null)
+                        Console.WriteLine(exception.Message);
+                        if (insights)
                         {
-                            Console.WriteLine(exception.GetType().ToString());
-                            Console.WriteLine(exception.Message);
-                            if (insights)
-                            {
-                                telemetryClient.GetMetric("MessageSizeExceeded").TrackValue(1);
-                            }
+                            telemetryClient.GetMetric("MessageSizeExceeded").TrackValue(1);
                         }
                     }                    
                     count++;
