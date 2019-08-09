@@ -139,36 +139,31 @@ namespace PumpSimulator
             }
             catch (System.Exception ex)
             {
-                var deviceId = Environment.MachineName + "-" + Environment.GetEnvironmentVariable("DEVICE");
                 Console.WriteLine("PumpSimulator Main() error.");
-                Console.WriteLine(ex.Message);
 
-                var jsonSettings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-
-                if (insights) {
-                    var telemetry = new ExceptionTelemetry(ex);
-                    Type exceptionType = ex.GetType();
-                    if (exceptionType != null)
+                var telemetry = new ExceptionTelemetry(ex);
+                Type exceptionType = ex.GetType();
+                if (exceptionType != null)
+                {
+                    foreach (PropertyInfo property in exceptionType.GetProperties())
                     {
-                        foreach (PropertyInfo property in exceptionType.GetProperties())
+                        if (string.Equals(property.Name, "StackTrace") ||
+                            string.Equals(property.Name, "Message") ||
+                            string.Equals(property.Name, "TargetSite"))
                         {
-                            if (string.Equals(property.Name, "StackTrace") ||
-                                string.Equals(property.Name, "Message") ||
-                                string.Equals(property.Name, "TargetSite"))
-                            {
-                                // skip duplicate data
-                            }
-                            else
-                            {
-                                telemetry.Properties[$"{exceptionType.Name}.{property.Name}"] 
-                                    = JsonConvert.SerializeObject(property.GetValue(ex), jsonSettings);
-                            }
+                            // skip duplicate data
+                        }
+                        else
+                        {
+                            telemetry.Properties[$"{exceptionType.Name}.{property.Name}"] 
+                                = JsonConvert.SerializeObject(property.GetValue(ex), new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                         }
                     }
-
-                    telemetryClient.TrackException(telemetry);
                 }
-                
+                telemetryClient.TrackException(telemetry);
+
+                Console.WriteLine(ex.Message);
+
                 return -1;
             }
             
