@@ -41,7 +41,7 @@ namespace PumpSimulator
         {
             try
             {
-                Console.WriteLine("PumpSimulator Main() started.");
+                Console.WriteLine($"{DateTime.Now.ToLocalTime()}>\t PumpSimulator Main() started.");
                 var appSettings = ConfigurationManager.AppSettings;
 
                 // Setup App Insights
@@ -139,7 +139,7 @@ namespace PumpSimulator
             }
             catch (System.Exception ex)
             {
-                Console.WriteLine("PumpSimulator Main() error.");
+                Console.WriteLine("{DateTime.Now.ToLocalTime()}>\t PumpSimulator Main() error.");
                 Console.WriteLine(ex.Message);
 
                 return -1;

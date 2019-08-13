@@ -180,29 +180,29 @@
     },
     "pump1": {
       "properties.desired": {
-        "SendInterval": 1000,
+        "SendInterval": 500,
         "SendData": true,
-        "EventCount": 1
+        "EventCount": 544
       }
     },
     "pump2": {
       "properties.desired": {
         "SendInterval": 1000,
-        "SendData": true,
+        "SendData": false,
         "EventCount": 1
       }
     },
     "pump3": {
       "properties.desired": {
         "SendInterval": 1000,
-        "SendData": true,
+        "SendData": false,
         "EventCount": 1
       }
     },
     "pump4": {
       "properties.desired": {
         "SendInterval": 1000,
-        "SendData": true,
+        "SendData": false,
         "EventCount": 1
       }
     }
