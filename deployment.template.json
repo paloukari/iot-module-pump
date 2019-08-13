@@ -61,7 +61,7 @@
                   "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
               },
               "LOG_LEVEL": {
-                "value": "debug"
+                "value": "info"
               },
               "DEVICE": {
                 "value": "pump1"
@@ -124,7 +124,7 @@
     "pump2": {
       "properties.desired": {
         "SendInterval": 1000,
-        "SendData": false,
+        "SendData": true,
         "EventCount": 1
       }
     }
