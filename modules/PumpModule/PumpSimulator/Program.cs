@@ -41,7 +41,7 @@ namespace PumpSimulator
         {
             try
             {
-                Console.WriteLine($"{DateTime.Now.ToLocalTime()}>\t PumpSimulator Main() started.");
+                Console.WriteLine($"{DateTime.Now.ToLocalTime()}>\t The PumpSimulator Main() has started.");
                 var appSettings = ConfigurationManager.AppSettings;
 
                 // Setup App Insights

@@ -124,7 +124,7 @@
     "pump2": {
       "properties.desired": {
         "SendInterval": 1000,
-        "SendData": true,
+        "SendData": false,
         "EventCount": 1
       }
     }
