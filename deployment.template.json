@@ -67,37 +67,6 @@
                 "value": "pump1"
               }
             }
-          },
-          "pump2": {
-            "version": "1.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "${MODULES.PumpModule}",
-              "createOptions": {
-                "HostConfig": {
-                  "LogConfig": {
-                    "Type": "json-file",
-                    "Config": {
-                      "max-size": "2m",
-                      "max-file": "3"
-                    }
-                  }
-                }
-              }
-            },
-            "env": {
-              "APPINSIGHTS_INSTRUMENTATIONKEY": {
-                  "value": "${APPINSIGHTS_INSTRUMENTATIONKEY}"
-              },
-              "LOG_LEVEL": {
-                "value": "debug"
-              },
-              "DEVICE": {
-                "value": "pump2"
-              }
-            }
           }
         }
       }
@@ -105,8 +74,7 @@
     "$edgeHub": {
       "properties.desired": {
         "routes": {
-          "Pump1ToIoTHub": "FROM /messages/modules/pump1/outputs/* INTO $upstream",
-          "Pump2ToIoTHub": "FROM /messages/modules/pump2/outputs/* INTO $upstream"
+          "Pump1ToIoTHub": "FROM /messages/modules/pump1/outputs/* INTO $upstream"
         },
         "schemaVersion": "1.0",
         "storeAndForwardConfiguration": {
@@ -119,13 +87,6 @@
         "SendInterval": 150,
         "SendData": true,
         "EventCount": 544
-      }
-    },
-    "pump2": {
-      "properties.desired": {
-        "SendInterval": 1000,
-        "SendData": false,
-        "EventCount": 1
       }
     }
   }
