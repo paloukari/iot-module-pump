@@ -93,10 +93,8 @@ namespace PumpSimulator
                         ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
                         ModuleUtil.DefaultTransientRetryStrategy);
                 await moduleClient.OpenAsync();
-                await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
-                await moduleClient.SetMethodHandlerAsync("ping", PingMethod, null);
-
-
+                
+                
                 (CancellationTokenSource cts, ManualResetEventSlim completed, Option<object> handler) = ShutdownHandler.Init(TimeSpan.FromSeconds(5), null);
 
                 Twin currentTwinProperties = await moduleClient.GetTwinAsync();
@@ -128,6 +126,8 @@ namespace PumpSimulator
 
                 ModuleClient userContext = moduleClient;
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
+                await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
+                await moduleClient.SetMethodHandlerAsync("ping", PingMethod, userContext);
                 await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
                 await SendEvents(moduleClient, messageCount, simulatorParameters, cts);
                 await cts.Token.WhenCanceled();
