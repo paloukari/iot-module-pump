@@ -30,6 +30,7 @@ namespace PumpSimulator
         static bool sendData = true;
         static TimeSpan messageDelay;
         static int eventCount = 1;
+        static int messageCount;
 
         static TelemetryClient telemetryClient;
         static bool insights = false;
@@ -39,49 +40,16 @@ namespace PumpSimulator
 
         static async Task<int> MainAsync()
         {
+
+            Console.WriteLine($"{DateTime.Now.ToLocalTime()}>\t The PumpSimulator Main() has started.");
+            SetupTelemetry();
+
             try
             {
-                Console.WriteLine($"{DateTime.Now.ToLocalTime()}>\t The PumpSimulator Main() has started.");
-                var appSettings = ConfigurationManager.AppSettings;
-
-                // Setup App Insights
-                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY")))
-                {
-                    Console.WriteLine("Application Insights Enabled.");
-                    insights = true;
-                    telemetryClient = new TelemetryClient();
-                    telemetryClient.Context.Device.Id = Environment.MachineName;
-                    telemetryClient.TrackEvent("Simulator started");
-                    telemetryClient.GetMetric("PumpCount").TrackValue(1);  
-                }
-
-                // Setup Debug
-                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("LOG_LEVEL")))
-                {
-                    if(Environment.GetEnvironmentVariable("LOG_LEVEL") == "debug") 
-                    {
-                        Console.WriteLine("Debug Turned On.");
-                        debug = true;
-                    }
-                }
-
-
-                if (!TimeSpan.TryParse(appSettings["MessageDelay"], out messageDelay))
-                {
-                    messageDelay = TimeSpan.FromSeconds(1000);
-                }
-
-                int messageCount;
-
-                if(!int.TryParse(Environment.GetEnvironmentVariable(MessageCountConfigKey), out messageCount))
-                {
-                    if (!int.TryParse(appSettings[MessageCountConfigKey], out messageCount))
-                    {
-                        messageCount = 500;
-                    }
-                }
+                RetrieveSettingsFromConfig();
 
                 var simulatorParameters = SimulatorParameters.Create();
+                (CancellationTokenSource cts, ManualResetEventSlim completed, Option<object> handler) = ShutdownHandler.Init(TimeSpan.FromSeconds(5), null);
 
                 Console.WriteLine(
                     $"Initializing simulated sensor to send {(SendUnlimitedMessages(messageCount) ? "unlimited" : messageCount.ToString())} "
@@ -92,46 +60,17 @@ namespace PumpSimulator
                         TransportType.Amqp_Tcp_Only,
                         ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
                         ModuleUtil.DefaultTransientRetryStrategy);
-                await moduleClient.OpenAsync();
-                
-                
-                (CancellationTokenSource cts, ManualResetEventSlim completed, Option<object> handler) = ShutdownHandler.Init(TimeSpan.FromSeconds(5), null);
-
-                Twin currentTwinProperties = await moduleClient.GetTwinAsync();
-                Console.WriteLine("Initialized Twin State Received");
-
-                if (currentTwinProperties.Properties.Desired.Contains(SendIntervalConfigKey))
-                {
-                    Console.WriteLine("SendInterval: " + currentTwinProperties.Properties.Desired[SendIntervalConfigKey]);
-                    var desiredInterval = (int)currentTwinProperties.Properties.Desired[SendIntervalConfigKey];
-                    messageDelay = TimeSpan.FromMilliseconds(desiredInterval);
-                }
-
-                if (currentTwinProperties.Properties.Desired.Contains(EventCountConfigKey))
-                {
-                    Console.WriteLine("EventCount: " + currentTwinProperties.Properties.Desired[EventCountConfigKey]);  
-                    var desiredCount = (int)currentTwinProperties.Properties.Desired[EventCountConfigKey];
-                    eventCount = desiredCount;
-                }
-
-                if (currentTwinProperties.Properties.Desired.Contains(SendDataConfigKey))
-                {
-                    Console.WriteLine("SendData: " + currentTwinProperties.Properties.Desired[SendDataConfigKey]);  
-                    sendData = (bool)currentTwinProperties.Properties.Desired[SendDataConfigKey];
-                    if (!sendData)
-                    {
-                        Console.WriteLine("Sending data disabled. Change twin configuration to start sending again.");
-                    }
-                }
-
                 ModuleClient userContext = moduleClient;
+                await moduleClient.OpenAsync();
+
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
                 await moduleClient.SetMethodHandlerAsync("ping", PingMethod, userContext);
                 await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
+
+                await RetrieveSettingsFromTwin(moduleClient);
                 await SendEvents(moduleClient, messageCount, simulatorParameters, cts);
                 await cts.Token.WhenCanceled();
-
 
                 completed.Set();
                 handler.ForEach(h => GC.KeepAlive(h));
@@ -142,10 +81,72 @@ namespace PumpSimulator
             {
                 Console.WriteLine("{DateTime.Now.ToLocalTime()}>\t PumpSimulator Main() error.");
                 Console.WriteLine(ex.Message);
-
+                var telemetry = new ExceptionTelemetry(ex);
+                telemetryClient.TrackException(telemetry);
                 return -1;
             }
-            
+        }
+
+        private static void SetupTelemetry()
+        {
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY")))
+            {
+                insights = true;
+                telemetryClient = new TelemetryClient();
+                telemetryClient.Context.Device.Id = Environment.MachineName;
+                telemetryClient.TrackEvent("Simulator started");
+                telemetryClient.GetMetric("PumpCount").TrackValue(1);
+                Console.WriteLine("Application Insights Enabled.");
+            }
+        }
+
+        private static void RetrieveSettingsFromConfig()
+        {
+            var appSettings = ConfigurationManager.AppSettings;
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("LOG_LEVEL")) && Environment.GetEnvironmentVariable("LOG_LEVEL") == "debug")
+            {
+                debug = true;
+            }
+
+            if (!TimeSpan.TryParse(appSettings["MessageDelay"], out messageDelay))
+            {
+                messageDelay = TimeSpan.FromSeconds(1000);
+            }
+
+            if (!int.TryParse(Environment.GetEnvironmentVariable(MessageCountConfigKey), out messageCount) && !int.TryParse(appSettings[MessageCountConfigKey], out messageCount))
+            {
+                messageCount = 500;
+            }
+        }
+
+        private static async Task RetrieveSettingsFromTwin(ModuleClient moduleClient)
+        {
+            Twin currentTwinProperties = await moduleClient.GetTwinAsync();
+            Console.WriteLine("Initialized Twin State Received");
+
+            if (currentTwinProperties.Properties.Desired.Contains(SendIntervalConfigKey))
+            {
+                Console.WriteLine("SendInterval: " + currentTwinProperties.Properties.Desired[SendIntervalConfigKey]);
+                var desiredInterval = (int)currentTwinProperties.Properties.Desired[SendIntervalConfigKey];
+                messageDelay = TimeSpan.FromMilliseconds(desiredInterval);
+            }
+
+            if (currentTwinProperties.Properties.Desired.Contains(EventCountConfigKey))
+            {
+                Console.WriteLine("EventCount: " + currentTwinProperties.Properties.Desired[EventCountConfigKey]);
+                var desiredCount = (int)currentTwinProperties.Properties.Desired[EventCountConfigKey];
+                eventCount = desiredCount;
+            }
+
+            if (currentTwinProperties.Properties.Desired.Contains(SendDataConfigKey))
+            {
+                Console.WriteLine("SendData: " + currentTwinProperties.Properties.Desired[SendDataConfigKey]);
+                sendData = (bool)currentTwinProperties.Properties.Desired[SendDataConfigKey];
+                if (!sendData)
+                {
+                    Console.WriteLine("Sending data disabled. Change twin configuration to start sending again.");
+                }
+            }
         }
 
         /// <summary>
