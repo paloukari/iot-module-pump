@@ -337,7 +337,7 @@ namespace PumpSimulator
             return Task.FromResult(response);
         }
 
-        static async Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
+        static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
             Console.WriteLine("Received direct method call to update Properties...");
             var properties = new TwinCollection($"{{ \"PingTime\":{DateTime.UtcNow.ToLongTimeString()}}}");
@@ -345,7 +345,8 @@ namespace PumpSimulator
             // var moduleClient = (ModuleClient)userContext;
             // await moduleClient.UpdateReportedPropertiesAsync(properties);
 
-            return await Task.FromResult(new MethodResponse((int)System.Net.HttpStatusCode.OK));
+            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
+            return Task.FromResult(response);
         }
 
         static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
