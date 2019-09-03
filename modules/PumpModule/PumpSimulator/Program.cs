@@ -94,7 +94,8 @@ namespace PumpSimulator
                         ModuleUtil.DefaultTransientRetryStrategy);
                 await moduleClient.OpenAsync();
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
-                
+                await moduleClient.SetMethodHandlerAsync("onPing", PingMethod, null);
+
 
                 (CancellationTokenSource cts, ManualResetEventSlim completed, Option<object> handler) = ShutdownHandler.Init(TimeSpan.FromSeconds(5), null);
 
@@ -128,7 +129,6 @@ namespace PumpSimulator
                 ModuleClient userContext = moduleClient;
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
-                await moduleClient.SetInputMessageHandlerAsync("report", ControlMessageHandle, userContext);
                 await SendEvents(moduleClient, messageCount, simulatorParameters, cts);
                 await cts.Token.WhenCanceled();
 
@@ -283,20 +283,12 @@ namespace PumpSimulator
 
         static bool SendUnlimitedMessages(int maximumNumberOfMessages) => maximumNumberOfMessages < 0;
 
-        private Task<MessageResponse> onReport(MethodRequest methodRequest, object userContext)
-        {
-            var data = Encoding.UTF8.GetString(methodRequest.Data);
-
-            Console.WriteLine($"Received message Body: [{data}]");
-
-            return Task.FromResult(MessageResponse.Completed);
-        }
+        
 
 
         // Control Message expected to be:
         // {
         //     "command" : "reset"
-        //     "command":  "report"
         // }
         static Task<MessageResponse> ControlMessageHandle(Message message, object userContext)
         {
@@ -344,13 +336,17 @@ namespace PumpSimulator
             return Task.FromResult(response);
         }
 
-        static async Task ReportProperties(object userContext)
+        static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
-            var moduleClient = (ModuleClient)userContext;
-            var patch = new TwinCollection($"{{ \"SendData\":{sendData.ToString().ToLower()}, \"SendInterval\": {messageDelay.TotalSeconds}, \"EventCount\": {eventCount.ToString()}}}");
-            await moduleClient.UpdateReportedPropertiesAsync(patch); // Just report back last desired property.
-        }
+            Console.WriteLine("Received direct method call to update Properties...");
+            var properties = new TwinCollection($"{{ \"PingTime\":{DateTime.UtcNow.ToLongTimeString()}}}");
 
+            var moduleClient = (ModuleClient)userContext;
+            moduleClient.UpdateReportedPropertiesAsync(properties).ConfigureAwait(false);
+
+            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
+            return Task.FromResult(response);
+        }
 
         static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
         {
