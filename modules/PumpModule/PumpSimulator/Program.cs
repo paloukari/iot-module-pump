@@ -94,7 +94,7 @@ namespace PumpSimulator
                         ModuleUtil.DefaultTransientRetryStrategy);
                 await moduleClient.OpenAsync();
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
-                await moduleClient.SetMethodHandlerAsync("onPing", PingMethod, null);
+                await moduleClient.SetMethodHandlerAsync("ping", PingMethod, null);
 
 
                 (CancellationTokenSource cts, ManualResetEventSlim completed, Option<object> handler) = ShutdownHandler.Init(TimeSpan.FromSeconds(5), null);
@@ -336,16 +336,16 @@ namespace PumpSimulator
             return Task.FromResult(response);
         }
 
-        static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
+        static async Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
             Console.WriteLine("Received direct method call to update Properties...");
             var properties = new TwinCollection($"{{ \"PingTime\":{DateTime.UtcNow.ToLongTimeString()}}}");
 
             var moduleClient = (ModuleClient)userContext;
-            moduleClient.UpdateReportedPropertiesAsync(properties).ConfigureAwait(false);
+            await moduleClient.UpdateReportedPropertiesAsync(properties);
 
             var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
-            return Task.FromResult(response);
+            return await Task.FromResult(response);
         }
 
         static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
@@ -387,8 +387,7 @@ namespace PumpSimulator
     public enum ControlCommandEnum
     {
         Reset = 0,
-        NoOperation = 1,
-        Report = 2
+        NoOperation = 1
     }
 
     class ControlCommand
