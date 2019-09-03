@@ -128,6 +128,7 @@ namespace PumpSimulator
                 ModuleClient userContext = moduleClient;
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
+                await moduleClient.SetInputMessageHandlerAsync("report", ControlMessageHandle, userContext);
                 await SendEvents(moduleClient, messageCount, simulatorParameters, cts);
                 await cts.Token.WhenCanceled();
 
@@ -232,7 +233,6 @@ namespace PumpSimulator
                         currentTemp += -0.25 + (Rnd.NextDouble() * 1.5);
                     }
                    
-
                     var msgBody = new MessageBody
                     {
                         Asset = Environment.GetEnvironmentVariable("ASSET") ?? "whidbey",
@@ -283,9 +283,20 @@ namespace PumpSimulator
 
         static bool SendUnlimitedMessages(int maximumNumberOfMessages) => maximumNumberOfMessages < 0;
 
+        private Task<MessageResponse> onReport(MethodRequest methodRequest, object userContext)
+        {
+            var data = Encoding.UTF8.GetString(methodRequest.Data);
+
+            Console.WriteLine($"Received message Body: [{data}]");
+
+            return Task.FromResult(MessageResponse.Completed);
+        }
+
+
         // Control Message expected to be:
         // {
         //     "command" : "reset"
+        //     "command":  "report"
         // }
         static Task<MessageResponse> ControlMessageHandle(Message message, object userContext)
         {
@@ -333,6 +344,14 @@ namespace PumpSimulator
             return Task.FromResult(response);
         }
 
+        static async Task ReportProperties(object userContext)
+        {
+            var moduleClient = (ModuleClient)userContext;
+            var patch = new TwinCollection($"{{ \"SendData\":{sendData.ToString().ToLower()}, \"SendInterval\": {messageDelay.TotalSeconds}, \"EventCount\": {eventCount.ToString()}}}");
+            await moduleClient.UpdateReportedPropertiesAsync(patch); // Just report back last desired property.
+        }
+
+
         static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
         {
             Console.WriteLine("Device Twin Update Received");
@@ -372,7 +391,8 @@ namespace PumpSimulator
     public enum ControlCommandEnum
     {
         Reset = 0,
-        NoOperation = 1
+        NoOperation = 1,
+        Report = 2
     }
 
     class ControlCommand
