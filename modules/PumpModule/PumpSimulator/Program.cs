@@ -342,11 +342,10 @@ namespace PumpSimulator
             Console.WriteLine("Received direct method call to update Properties...");
             var properties = new TwinCollection($"{{ \"PingTime\":{DateTime.UtcNow.ToLongTimeString()}}}");
 
-            var moduleClient = (ModuleClient)userContext;
-            await moduleClient.UpdateReportedPropertiesAsync(properties);
+            // var moduleClient = (ModuleClient)userContext;
+            // await moduleClient.UpdateReportedPropertiesAsync(properties);
 
-            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
-            return await Task.FromResult(response);
+            return await Task.FromResult(new MethodResponse((int)System.Net.HttpStatusCode.OK));
         }
 
         static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
