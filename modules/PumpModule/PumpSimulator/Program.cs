@@ -333,20 +333,19 @@ namespace PumpSimulator
         {
             Console.WriteLine("Received direct method call to reset temperature sensor...");
             Reset.Set(true);
+            
             var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
             return Task.FromResult(response);
         }
 
-        static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
+        static async Task<MethodResponse> PingMethod(MethodRequest methodRequest, ModuleClient client)
         {
-            Console.WriteLine("Received direct method call to update Properties...");
-            var properties = new TwinCollection($"{{ \"PingTime\":{DateTime.UtcNow.ToLongTimeString()}}}");
+            Console.WriteLine("Received direct method call to update Properties..."); 
+            var properties = new TwinCollection(JsonConvert.SerializeObject(new {PingTime = DateTime.UtcNow }));
+            await client.UpdateReportedPropertiesAsync(properties);
 
-            // var moduleClient = (ModuleClient)userContext;
-            // await moduleClient.UpdateReportedPropertiesAsync(properties);
-
-            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
-            return Task.FromResult(response);
+            var response = new MethodResponse(200);
+            return await Task.FromResult(response);
         }
 
         static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
