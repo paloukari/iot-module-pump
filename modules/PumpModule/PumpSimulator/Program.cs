@@ -344,7 +344,7 @@ namespace PumpSimulator
             {
                 TwinCollection reportedProperties = new TwinCollection();
                 reportedProperties["pingTime"] = DateTime.Now;
-                moduleClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
+                moduleClient.UpdateReportedPropertiesAsync(reportedProperties);
                 Console.WriteLine("Updated Module Twin Properties...");
             }
             catch (Exception ex)
