@@ -37,6 +37,7 @@ namespace PumpSimulator
         static TelemetryClient telemetryClient;
         static ModuleClient moduleClient;
         static TwinCollection reportedProperties;
+        static TransportType protocol = TransportType.Mqtt_Tcp_Only;
 
         public static int Main() => MainAsync().Result;
 
@@ -59,13 +60,11 @@ namespace PumpSimulator
                     + $"To change this, set the environment variable {MessageCountConfigKey} to the number of messages that should be sent (set it to -1 to send unlimited messages).");
 
                 moduleClient = await ModuleUtil.CreateModuleClientAsync(
-                        TransportType.Amqp_Tcp_Only,
+                        protocol,
                         ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
                         ModuleUtil.DefaultTransientRetryStrategy);
                 ModuleClient userContext = moduleClient;
                 reportedProperties = new TwinCollection();
-
-                //await moduleClient.OpenAsync();
 
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
@@ -116,6 +115,11 @@ namespace PumpSimulator
             if (!TimeSpan.TryParse(appSettings["MessageDelay"], out messageDelay))
             {
                 messageDelay = TimeSpan.FromSeconds(1000);
+            }
+
+            if (!TransportType.TryParse(appSettings["Protocol"], out protocol))
+            {
+                protocol = TransportType.Mqtt_Tcp_Only;
             }
 
             if (!int.TryParse(Environment.GetEnvironmentVariable(MessageCountConfigKey), out messageCount) && !int.TryParse(appSettings[MessageCountConfigKey], out messageCount))
