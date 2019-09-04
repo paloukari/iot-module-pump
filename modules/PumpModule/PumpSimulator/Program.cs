@@ -59,7 +59,7 @@ namespace PumpSimulator
                     + $"To change this, set the environment variable {MessageCountConfigKey} to the number of messages that should be sent (set it to -1 to send unlimited messages).");
 
                 moduleClient = await ModuleUtil.CreateModuleClientAsync(
-                        TransportType.Mqtt_Tcp_Only,
+                        TransportType.Amqp_Tcp_Only,
                         ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
                         ModuleUtil.DefaultTransientRetryStrategy);
                 ModuleClient userContext = moduleClient;
@@ -367,7 +367,10 @@ namespace PumpSimulator
                 Console.WriteLine(ex.Message);
             }
 
-            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Pong"), 200));
+            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
+            return Task.FromResult(response);
+
+            //return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Pong"), 200));
         }
 
 
