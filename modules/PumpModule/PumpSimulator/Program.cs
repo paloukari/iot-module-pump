@@ -65,7 +65,8 @@ namespace PumpSimulator
 
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
-                await moduleClient.SetMethodHandlerAsync("ping", PingMethod, userContext);
+                await moduleClient.SetMethodHandlerAsync("ping", PingMethod, null);
+                //await moduleClient.SetMethodHandlerAsync("ping", PingMethod, userContext);
                 await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
 
                 await RetrieveSettingsFromTwin(moduleClient);
@@ -338,14 +339,18 @@ namespace PumpSimulator
             return Task.FromResult(response);
         }
 
-        static Task<MethodResponse> PingMethod(MethodRequest methodRequest, ModuleClient client)
+        static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
-            Console.WriteLine("Received direct method call to update Properties..."); 
-            var properties = new TwinCollection(JsonConvert.SerializeObject(new {PingTime = DateTime.UtcNow }));
-            client.UpdateReportedPropertiesAsync(properties).Wait();
+            Console.WriteLine("Received direct method call to update Properties...");
 
-            return Task.FromResult(new MethodResponse(200));
+            var moduleClient = (ModuleClient)userContext;
+            var properties = new TwinCollection(JsonConvert.SerializeObject(new { PingTime = DateTime.UtcNow }));
+            moduleClient.UpdateReportedPropertiesAsync(properties).Wait();
+
+            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
+            return Task.FromResult(response);
         }
+
 
         static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
         {
