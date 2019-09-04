@@ -358,7 +358,7 @@ namespace PumpSimulator
                 directMethod["PingTime"] = DateTime.Now;
                 reportedProperties["DirectMethod"] = directMethod;
                 Console.WriteLine("Reporting Module Twin Properties...");
-               // moduleClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
+                moduleClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
                 Console.WriteLine("Updated Module Twin Properties...");
             }
             catch (Exception ex)
