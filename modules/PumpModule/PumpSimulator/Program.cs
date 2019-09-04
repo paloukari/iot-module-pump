@@ -35,7 +35,8 @@ namespace PumpSimulator
         static int messageCount;
 
         static TelemetryClient telemetryClient;
-        static ModuleClient moduleClient;        
+        static ModuleClient moduleClient;
+        static TwinCollection reportedProperties;
 
         public static int Main() => MainAsync().Result;
 
@@ -62,6 +63,8 @@ namespace PumpSimulator
                         ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
                         ModuleUtil.DefaultTransientRetryStrategy);
                 ModuleClient userContext = moduleClient;
+                reportedProperties = new TwinCollection();
+
                 await moduleClient.OpenAsync();
 
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
@@ -342,10 +345,11 @@ namespace PumpSimulator
             Console.WriteLine("Received Ping direct method call...");
             try
             {
-                var twin = moduleClient.GetTwinAsync().Result;
-                var reportedProperties = twin.Properties.Reported;
-                reportedProperties["pingTime"] = DateTime.Now;
-                moduleClient.UpdateReportedPropertiesAsync(reportedProperties);
+                var directMethod = new TwinCollection();
+                directMethod["PingTime"] = DateTime.Now;
+                reportedProperties["DirectMethod"] = directMethod;
+                Console.WriteLine("Reporting Module Twin Properties...");
+                moduleClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
                 Console.WriteLine("Updated Module Twin Properties...");
             }
             catch (Exception ex)
@@ -357,28 +361,28 @@ namespace PumpSimulator
         }
 
 
-        static async Task OnDesiredPropertiesUpdated(TwinCollection desiredPropertiesPatch, object userContext)
+        static async Task OnDesiredPropertiesUpdated(TwinCollection desiredProperties, object userContext)
         {
             Console.WriteLine("Device Twin Update Received");
 
             // At this point just update the configure configuration.
-            if (desiredPropertiesPatch.Contains(SendIntervalConfigKey))
+            if (desiredProperties.Contains(SendIntervalConfigKey))
             {
-                var desiredInterval = (int)desiredPropertiesPatch[SendIntervalConfigKey];
+                var desiredInterval = (int)desiredProperties[SendIntervalConfigKey];
                 Console.WriteLine("Updating Send Interval to " + desiredInterval.ToString());
-                messageDelay = TimeSpan.FromMilliseconds((int)desiredPropertiesPatch[SendIntervalConfigKey]);
+                messageDelay = TimeSpan.FromMilliseconds((int)desiredProperties[SendIntervalConfigKey]);
             }
 
-            if (desiredPropertiesPatch.Contains(EventCountConfigKey))
+            if (desiredProperties.Contains(EventCountConfigKey))
             {
-                var desiredCount = (int)desiredPropertiesPatch[EventCountConfigKey];
+                var desiredCount = (int)desiredProperties[EventCountConfigKey];
                 Console.WriteLine("Updating Event Count to " + desiredCount.ToString());
-                eventCount = (int)desiredPropertiesPatch[EventCountConfigKey];
+                eventCount = (int)desiredProperties[EventCountConfigKey];
             }
 
-            if (desiredPropertiesPatch.Contains(SendDataConfigKey))
+            if (desiredProperties.Contains(SendDataConfigKey))
             {
-                bool desiredSendDataValue = (bool)desiredPropertiesPatch[SendDataConfigKey];
+                bool desiredSendDataValue = (bool)desiredProperties[SendDataConfigKey];
                 if (desiredSendDataValue != sendData && !desiredSendDataValue)
                 {
                     Console.WriteLine("Turning off Send Data. Change twin configuration to start sending again.");
@@ -387,9 +391,12 @@ namespace PumpSimulator
                 sendData = desiredSendDataValue;
             }
 
-            var moduleClient = (ModuleClient)userContext;
-            var patch = new TwinCollection($"{{ \"SendData\":{sendData.ToString().ToLower()}, \"SendInterval\": {messageDelay.TotalSeconds}, \"EventCount\": {eventCount.ToString()}}}");
-            await moduleClient.UpdateReportedPropertiesAsync(patch); // Just report back last desired property.
+            var settings = new TwinCollection();
+            settings["SendData"] = sendData.ToString().ToLower();
+            settings["SendInterval"] = messageDelay.TotalSeconds;
+            settings["EventCount"] = eventCount.ToString();
+            reportedProperties["settings"] = settings;
+            await moduleClient.UpdateReportedPropertiesAsync(reportedProperties);
         }
     }
 
