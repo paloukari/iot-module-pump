@@ -59,7 +59,7 @@ namespace PumpSimulator
                     + $"To change this, set the environment variable {MessageCountConfigKey} to the number of messages that should be sent (set it to -1 to send unlimited messages).");
 
                 moduleClient = await ModuleUtil.CreateModuleClientAsync(
-                        TransportType.Amqp_Tcp_Only,
+                        TransportType.Mqtt_Tcp_Only,
                         ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
                         ModuleUtil.DefaultTransientRetryStrategy);
                 ModuleClient userContext = moduleClient;
@@ -83,7 +83,7 @@ namespace PumpSimulator
             }
             catch (System.Exception ex)
             {
-                Console.WriteLine("{DateTime.Now.ToLocalTime()}>\t PumpSimulator Main() error.");
+                Console.WriteLine($"{DateTime.Now.ToLocalTime()}>\t PumpSimulator Main() error.");
                 Console.WriteLine(ex.Message);
                 var telemetry = new ExceptionTelemetry(ex);
                 telemetryClient.TrackException(telemetry);
