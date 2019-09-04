@@ -70,6 +70,7 @@ namespace PumpSimulator
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
                 await moduleClient.SetMethodHandlerAsync("ping", PingMethod, null);
+                await moduleClient.SetMethodHandlerAsync("ping2", Ping2Method, null);
                 await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
 
                 await RetrieveSettingsFromTwin(moduleClient);
