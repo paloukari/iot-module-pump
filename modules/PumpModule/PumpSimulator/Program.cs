@@ -341,14 +341,21 @@ namespace PumpSimulator
 
         static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
-            Console.WriteLine("Received direct method call to update Properties...");
-
+            Console.WriteLine("Received Ping direct method call...");
             var moduleClient = (ModuleClient)userContext;
-            var properties = new TwinCollection(JsonConvert.SerializeObject(new { PingTime = DateTime.UtcNow }));
-            moduleClient.UpdateReportedPropertiesAsync(properties).Wait();
 
-            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
-            return Task.FromResult(response);
+            try
+            {
+                var properties = new TwinCollection(JsonConvert.SerializeObject(new { PingTime = DateTime.UtcNow }));
+                moduleClient.UpdateReportedPropertiesAsync(properties).Wait();
+                Console.WriteLine("Updated Module Twin Properties...");
+                return Task.FromResult(new MethodResponse(200));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Task.FromResult(new MethodResponse(300));
+            }
         }
 
 
