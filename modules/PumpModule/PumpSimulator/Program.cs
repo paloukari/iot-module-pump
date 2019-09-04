@@ -346,7 +346,7 @@ namespace PumpSimulator
 
             try
             {
-                // Update device twin with reboot time. 
+                // Update device twin with ping time. 
                 TwinCollection reportedProperties, ping, lastPing;
                 lastPing = new TwinCollection();
                 ping = new TwinCollection();
