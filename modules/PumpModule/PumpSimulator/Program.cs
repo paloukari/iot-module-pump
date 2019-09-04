@@ -352,7 +352,7 @@ namespace PumpSimulator
                 Console.WriteLine(ex.Message);
             }
 
-            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Ping Received"), 200));
+            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Pong"), 200));
         }
 
 
