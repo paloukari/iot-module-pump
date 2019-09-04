@@ -349,7 +349,8 @@ namespace PumpSimulator
         static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
             Console.WriteLine("Received direct method call to ping method...");
-            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Pong"), 200));
+            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
+            return Task.FromResult(response);
         }
 
         static Task<MethodResponse> CheckMethod(MethodRequest methodRequest, object userContext)
