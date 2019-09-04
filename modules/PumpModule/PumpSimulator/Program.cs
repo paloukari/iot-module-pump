@@ -36,6 +36,8 @@ namespace PumpSimulator
         static bool insights = false;
         static bool debug = false;
 
+        static ModuleClient moduleClient = null;
+
         public static int Main() => MainAsync().Result;
 
         static async Task<int> MainAsync()
@@ -56,7 +58,7 @@ namespace PumpSimulator
                     + $"messages, at an interval of {messageDelay.TotalSeconds} seconds.\n"
                     + $"To change this, set the environment variable {MessageCountConfigKey} to the number of messages that should be sent (set it to -1 to send unlimited messages).");
 
-                ModuleClient moduleClient = await ModuleUtil.CreateModuleClientAsync(
+                moduleClient = await ModuleUtil.CreateModuleClientAsync(
                         TransportType.Amqp_Tcp_Only,
                         ModuleUtil.DefaultTimeoutErrorDetectionStrategy,
                         ModuleUtil.DefaultTransientRetryStrategy);
@@ -66,7 +68,6 @@ namespace PumpSimulator
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
                 await moduleClient.SetMethodHandlerAsync("ping", PingMethod, null);
-                //await moduleClient.SetMethodHandlerAsync("ping", PingMethod, userContext);
                 await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
 
                 await RetrieveSettingsFromTwin(moduleClient);
@@ -342,20 +343,29 @@ namespace PumpSimulator
         static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
             Console.WriteLine("Received Ping direct method call...");
-            var moduleClient = (ModuleClient)userContext;
 
             try
             {
-                var properties = new TwinCollection(JsonConvert.SerializeObject(new { PingTime = DateTime.UtcNow }));
-                moduleClient.UpdateReportedPropertiesAsync(properties).Wait();
+                // Update device twin with reboot time. 
+                TwinCollection reportedProperties, reboot, lastReboot;
+                lastReboot = new TwinCollection();
+                reboot = new TwinCollection();
+
+                reportedProperties = new TwinCollection();
+                lastReboot["lastReboot"] = DateTime.Now;
+                reboot["reboot"] = lastReboot;
+                reportedProperties["iothubDM"] = reboot;
+                moduleClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
                 Console.WriteLine("Updated Module Twin Properties...");
-                return Task.FromResult(new MethodResponse(200));
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Task.FromResult(new MethodResponse(300));
             }
+
+            string result = "'Ping Received.'";
+            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 200));
         }
 
 
