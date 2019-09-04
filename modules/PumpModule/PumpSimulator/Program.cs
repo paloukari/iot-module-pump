@@ -65,7 +65,7 @@ namespace PumpSimulator
                 ModuleClient userContext = moduleClient;
                 reportedProperties = new TwinCollection();
 
-                await moduleClient.OpenAsync();
+                //await moduleClient.OpenAsync();
 
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
@@ -336,6 +336,15 @@ namespace PumpSimulator
             Console.WriteLine("Received direct method call to reset temperature sensor...");
             Reset.Set(true);
             
+            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
+            return Task.FromResult(response);
+        }
+
+        static Task<MethodResponse> Ping2Method(MethodRequest methodRequest, object userContext)
+        {
+            Console.WriteLine("Received direct method call to ping2 method...");
+
+
             var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
             return Task.FromResult(response);
         }
