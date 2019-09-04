@@ -22,6 +22,7 @@ namespace PumpSimulator
         const string SendDataConfigKey = "SendData";
         const string SendIntervalConfigKey = "SendInterval";
         const string EventCountConfigKey = "EventCount";
+        const string ProtocolConfigKey = "Protocol";
 
         static readonly Guid BatchId = Guid.NewGuid();
         static readonly AtomicBoolean Reset = new AtomicBoolean(false);
@@ -69,7 +70,7 @@ namespace PumpSimulator
                 await moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdated, userContext);
                 await moduleClient.SetMethodHandlerAsync("reset", ResetMethod, null);
                 await moduleClient.SetMethodHandlerAsync("ping", PingMethod, null);
-                await moduleClient.SetMethodHandlerAsync("ping2", Ping2Method, null);
+                await moduleClient.SetMethodHandlerAsync("check", CheckMethod, null);
                 await moduleClient.SetInputMessageHandlerAsync("control", ControlMessageHandle, userContext);
 
                 await RetrieveSettingsFromTwin(moduleClient);
@@ -117,7 +118,7 @@ namespace PumpSimulator
                 messageDelay = TimeSpan.FromSeconds(1000);
             }
 
-            if (!TransportType.TryParse(appSettings["Protocol"], out protocol))
+            if (!TransportType.TryParse(Environment.GetEnvironmentVariable(ProtocolConfigKey), out protocol) || !TransportType.TryParse(appSettings[ProtocolConfigKey], out protocol))
             {
                 protocol = TransportType.Mqtt_Tcp_Only;
             }
@@ -345,26 +346,22 @@ namespace PumpSimulator
             return Task.FromResult(response);
         }
 
-        static Task<MethodResponse> Ping2Method(MethodRequest methodRequest, object userContext)
-        {
-            Console.WriteLine("Received direct method call to ping2 method...");
-
-
-            var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
-            return Task.FromResult(response);
-        }
-
         static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
-            Console.WriteLine("Received Ping direct method call...");
+            Console.WriteLine("Received direct method call to ping method...");
+            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Pong"), 200));
+        }
+
+        static Task<MethodResponse> CheckMethod(MethodRequest methodRequest, object userContext)
+        {
+            Console.WriteLine("Received Check direct method call...");
             try
             {
                 var directMethod = new TwinCollection();
-                directMethod["PingTime"] = DateTime.Now;
+                directMethod["CheckTime"] = DateTime.Now;
                 reportedProperties["DirectMethod"] = directMethod;
-                Console.WriteLine("Reporting Module Twin Properties...");
+
                 moduleClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
-                Console.WriteLine("Updated Module Twin Properties...");
             }
             catch (Exception ex)
             {
@@ -373,8 +370,6 @@ namespace PumpSimulator
 
             var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
             return Task.FromResult(response);
-
-            //return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Pong"), 200));
         }
 
 
