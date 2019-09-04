@@ -342,7 +342,8 @@ namespace PumpSimulator
             Console.WriteLine("Received Ping direct method call...");
             try
             {
-                TwinCollection reportedProperties = new TwinCollection();
+                var twin = moduleClient.GetTwinAsync().Result;
+                var reportedProperties = twin.Properties.Reported;
                 reportedProperties["pingTime"] = DateTime.Now;
                 moduleClient.UpdateReportedPropertiesAsync(reportedProperties);
                 Console.WriteLine("Updated Module Twin Properties...");
