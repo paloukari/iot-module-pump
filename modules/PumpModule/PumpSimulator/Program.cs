@@ -347,14 +347,14 @@ namespace PumpSimulator
             try
             {
                 // Update device twin with reboot time. 
-                TwinCollection reportedProperties, reboot, lastReboot;
-                lastReboot = new TwinCollection();
-                reboot = new TwinCollection();
+                TwinCollection reportedProperties, ping, lastPing;
+                lastPing = new TwinCollection();
+                ping = new TwinCollection();
 
                 reportedProperties = new TwinCollection();
-                lastReboot["lastReboot"] = DateTime.Now;
-                reboot["reboot"] = lastReboot;
-                reportedProperties["iothubDM"] = reboot;
+                lastPing["lastPing"] = DateTime.Now;
+                ping["ping"] = lastPing;
+                reportedProperties["iothubDM"] = ping;
                 moduleClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
                 Console.WriteLine("Updated Module Twin Properties...");
 
