@@ -404,9 +404,9 @@ namespace PumpSimulator
             }
 
             var settings = new TwinCollection();
-            settings["SendData"] = sendData.ToString().ToLower();
-            settings["SendInterval"] = messageDelay.TotalSeconds;
-            settings["EventCount"] = eventCount.ToString();
+            settings["SendData"] = sendData;
+            settings["SendInterval"] = messageDelay.TotalMilliseconds;
+            settings["EventCount"] = eventCount;
             reportedProperties["settings"] = settings;
             await moduleClient.UpdateReportedPropertiesAsync(reportedProperties);
         }
