@@ -28,15 +28,14 @@ namespace PumpSimulator
         static readonly Random Rnd = new Random();
 
         static bool sendData = true;
+        static bool insights = false;
+        static bool debug = false;
         static TimeSpan messageDelay;
         static int eventCount = 1;
         static int messageCount;
 
         static TelemetryClient telemetryClient;
-        static bool insights = false;
-        static bool debug = false;
-
-        static ModuleClient moduleClient = null;
+        static ModuleClient moduleClient;        
 
         public static int Main() => MainAsync().Result;
 
@@ -287,8 +286,6 @@ namespace PumpSimulator
         static bool SendUnlimitedMessages(int maximumNumberOfMessages) => maximumNumberOfMessages < 0;
 
         
-
-
         // Control Message expected to be:
         // {
         //     "command" : "reset"
@@ -343,29 +340,19 @@ namespace PumpSimulator
         static Task<MethodResponse> PingMethod(MethodRequest methodRequest, object userContext)
         {
             Console.WriteLine("Received Ping direct method call...");
-
             try
             {
-                // Update device twin with ping time. 
-                TwinCollection reportedProperties, ping, lastPing;
-                lastPing = new TwinCollection();
-                ping = new TwinCollection();
-
-                reportedProperties = new TwinCollection();
-                lastPing["lastPing"] = DateTime.Now;
-                ping["ping"] = lastPing;
-                reportedProperties["iothubDM"] = ping;
+                TwinCollection reportedProperties = new TwinCollection();
+                reportedProperties["pingTime"] = DateTime.Now;
                 moduleClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
                 Console.WriteLine("Updated Module Twin Properties...");
-
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-            string result = "'Ping Received.'";
-            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes(result), 200));
+            return Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("Ping Received"), 200));
         }
 
 
