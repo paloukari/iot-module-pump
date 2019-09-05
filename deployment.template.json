@@ -84,9 +84,9 @@
     },
     "pump1": {
       "properties.desired": {
-        "SendInterval": 1000,
+        "SendInterval": 150,
         "SendData": true,
-        "EventCount": 1
+        "EventCount": 200
       }
     }
   }
