@@ -2,19 +2,40 @@
 FROM mcr.microsoft.com/dotnet/framework/sdk:4.7.2-windowsservercore-ltsc2019 AS builder
 WORKDIR C:\src\edge-module
 
-COPY . ./
+# COPY . ./
 
-# COPY PumpSimulator.sln .
-# COPY Microsoft.Azure.Devices.Edge.ModuleUtil Microsoft.Azure.Devices.Edge.ModuleUtil
-# COPY Microsoft.Azure.Devices.Edge.Util Microsoft.Azure.Devices.Edge.Util
-# COPY PumpSimulator PumpSimulator
+COPY PumpSimulator.sln .
+COPY Microsoft.Azure.Devices.Edge.ModuleUtil Microsoft.Azure.Devices.Edge.ModuleUtil
+COPY Microsoft.Azure.Devices.Edge.Util Microsoft.Azure.Devices.Edge.Util
+COPY PumpSimulator PumpSimulator
 
 RUN nuget restore
 RUN MSBuild.exe PumpSimulator.sln /t:restore
 RUN MSBuild.exe PumpSimulator.sln /t:build /p:Configuration=Release /p:OutputPath=C:\out
 
+# .NET Core builder
+FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS builder-core
+WORKDIR /app
+
+COPY ReverseProxy/*.csproj ./
+RUN dotnet restore
+
+COPY ReverseProxy/ ./
+RUN dotnet publish -c Release -o C:\out
+
 # app image
 FROM mcr.microsoft.com/dotnet/framework/runtime:4.7.2-windowsservercore-ltsc2019
+
+# Install .NET Core
+RUN setx path "%path%;%LocalAppData%\Microsoft\dotnet"
+
+# SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+RUN powershell "Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1';"
+RUN powershell "./dotnet-install.ps1 -Runtime 'aspnetcore' -Version '2.1.14'"
+
 WORKDIR C:\edge-module  
 COPY --from=builder C:\out .  
-ENTRYPOINT ["PumpSimulator.exe"] 
+COPY --from=builder-core C:\out ./core
+COPY entrypoint.ps1 .
+
+ENTRYPOINT ["powershell", "./entrypoint.ps1"] 

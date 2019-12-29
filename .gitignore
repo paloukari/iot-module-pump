@@ -4,6 +4,7 @@
 ## Deployment Manifests
 config/
 .env
+.env.bat
 modules_orig/
 
 # User-specific files

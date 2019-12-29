@@ -65,6 +65,15 @@
               },
               "DEVICE": {
                 "value": "pump1"
+              },
+              "WaitForProxySeconds":{
+                "value":"3"
+              },
+              "ProxySourceUrl":{
+                "value":"http://127.0.0.1:5004/"
+              },
+              "ProxyTargetSocketUrl":{
+                "value":"unix:///C:/ProgramData/iotedge/workload/sock"
               }
             }
           }

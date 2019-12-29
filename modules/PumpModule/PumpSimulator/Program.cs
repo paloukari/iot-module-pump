@@ -18,6 +18,11 @@ namespace PumpSimulator
 {
     class Program
     {
+        const string ProxySourceUrlConfigKey = "ProxySourceUrl";
+        const string ProxyTargetSocketUrlConfigKey = "ProxyTargetSocketUrl";
+        const string WaitForProxySecondsConfigKey = "WaitForProxySeconds";
+        const string IOTEDGE_WORKLOADURI = "IOTEDGE_WORKLOADURI";
+
         const string MessageCountConfigKey = "MessageCount";
         const string SendDataConfigKey = "SendData";
         const string SendIntervalConfigKey = "SendInterval";
@@ -85,7 +90,7 @@ namespace PumpSimulator
             catch (System.Exception ex)
             {
                 Console.WriteLine($"{DateTime.Now.ToLocalTime()}>\t PumpSimulator Main() error.");
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.ToString());
                 var telemetry = new ExceptionTelemetry(ex);
                 telemetryClient.TrackException(telemetry);
                 return -1;
@@ -108,6 +113,52 @@ namespace PumpSimulator
         private static void RetrieveSettingsFromConfig()
         {
             var appSettings = ConfigurationManager.AppSettings;
+
+            // Prepare to use the proxy.
+            string workloadUri = Environment.GetEnvironmentVariable(IOTEDGE_WORKLOADURI);
+            if (string.IsNullOrEmpty(workloadUri))
+            {
+                throw new InvalidOperationException($"Environment variable {IOTEDGE_WORKLOADURI} is required.");
+            }
+            if (workloadUri.StartsWith("unix", StringComparison.OrdinalIgnoreCase))
+            {
+                // We're in .NET Framework and we need to connect to a Unix Domain Socket.
+                // We'll use a local reverse proxy that will do a protocol translation.
+                string proxyTargetSocketUrl = Environment.GetEnvironmentVariable(ProxyTargetSocketUrlConfigKey);
+                if (string.IsNullOrEmpty(proxyTargetSocketUrl))
+                {
+                    throw new InvalidOperationException($"Environment variable {ProxyTargetSocketUrlConfigKey} is required.");
+                }
+                string proxySourceUrl = Environment.GetEnvironmentVariable(ProxySourceUrlConfigKey);
+                if (string.IsNullOrEmpty(proxySourceUrl))
+                {
+                    throw new InvalidOperationException($"Environment variable {proxySourceUrl} is required.");
+                }
+
+                if (!string.Equals(workloadUri, proxyTargetSocketUrl, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException($"Environment variables {ProxyTargetSocketUrlConfigKey} and {IOTEDGE_WORKLOADURI} values do not match. The values are {proxyTargetSocketUrl} and {workloadUri}.");
+                }
+                // Configure the SDK to use the proxy Url
+                Environment.SetEnvironmentVariable(IOTEDGE_WORKLOADURI, proxySourceUrl);
+
+                string waitForProxySeconds = Environment.GetEnvironmentVariable(WaitForProxySecondsConfigKey);
+                if (string.IsNullOrEmpty(waitForProxySeconds))
+                {
+                    throw new InvalidOperationException($"Environment variable {WaitForProxySecondsConfigKey} is required.");
+                }
+                if (!Int32.TryParse(waitForProxySeconds, out int seconds))
+                {
+                    throw new InvalidOperationException($"The Environment variable {WaitForProxySecondsConfigKey} is not an int.");
+                }
+                if (seconds <= 0)
+                {
+                    throw new InvalidOperationException($"The Environment variable {WaitForProxySecondsConfigKey} is not a positive int.");
+                }
+                Console.WriteLine($"Waiting for {seconds} seconds for the proxy to startup..");
+                Thread.Sleep(seconds * 1000);
+            }
+
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("LOG_LEVEL")) && Environment.GetEnvironmentVariable("LOG_LEVEL") == "debug")
             {
                 debug = true;
@@ -243,7 +294,7 @@ namespace PumpSimulator
                         });
                         currentTemp += -0.25 + (Rnd.NextDouble() * 1.5);
                     }
-                   
+
                     var msgBody = new MessageBody
                     {
                         Asset = Environment.GetEnvironmentVariable("ASSET") ?? "whidbey",
@@ -258,7 +309,7 @@ namespace PumpSimulator
                     eventMessage.Properties.Add("asset", msgBody.Asset);
                     var size = eventMessage.GetBytes().Length;
 
-                    if(debug) Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}, Body: [{dataBuffer}]");
+                    if (debug) Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}, Body: [{dataBuffer}]");
                     else Console.WriteLine($"\t{DateTime.Now.ToLocalTime()}> Sending message: {count}, Size: {size}");
 
                     try
@@ -270,7 +321,7 @@ namespace PumpSimulator
                             Metric sizeStats = telemetryClient.GetMetric("Special Operation Message Size");
                             sizeStats.TrackValue(size);
                         }
-                        await moduleClient.SendEventAsync("temperatureOutput", eventMessage);  
+                        await moduleClient.SendEventAsync("temperatureOutput", eventMessage);
                     }
                     catch (Microsoft.Azure.Devices.Client.Exceptions.MessageTooLargeException exception)
                     {
@@ -279,7 +330,7 @@ namespace PumpSimulator
                         {
                             telemetryClient.GetMetric("MessageSizeExceeded").TrackValue(1);
                         }
-                    }                    
+                    }
                     count++;
                 }
 
@@ -294,7 +345,7 @@ namespace PumpSimulator
 
         static bool SendUnlimitedMessages(int maximumNumberOfMessages) => maximumNumberOfMessages < 0;
 
-        
+
         // Control Message expected to be:
         // {
         //     "command" : "reset"
@@ -341,7 +392,7 @@ namespace PumpSimulator
         {
             Console.WriteLine("Received direct method call to reset temperature sensor...");
             Reset.Set(true);
-            
+
             var response = new MethodResponse((int)System.Net.HttpStatusCode.OK);
             return Task.FromResult(response);
         }
